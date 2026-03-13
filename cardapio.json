@@ -1,0 +1,106 @@
+{
+  "pratos": [
+    {
+      "id": 1,
+      "nome": "Frango ao molho com arroz e feijão",
+      "disponibilidade": ["segunda", "terca", "quarta", "quinta", "sexta", "sabado", "domingo"]
+    },
+    {
+      "id": 2,
+      "nome": "Picanha na brasa com fritas",
+      "disponibilidade": ["sexta", "sabado", "domingo"]
+    },
+    {
+      "id": 3,
+      "nome": "Filé de tilápia grelhado com salada",
+      "disponibilidade": ["segunda", "quarta", "sexta"]
+    },
+    {
+      "id": 4,
+      "nome": "Feijoada completa",
+      "disponibilidade": ["sabado"]
+    },
+    {
+      "id": 5,
+      "nome": "Parmegiana de frango com arroz",
+      "disponibilidade": ["segunda", "terca", "quarta", "quinta", "sexta"]
+    },
+    {
+      "id": 6,
+      "nome": "Costela assada com mandioca",
+      "disponibilidade": ["domingo"]
+    },
+    {
+      "id": 7,
+      "nome": "Misto quente",
+      "disponibilidade": ["segunda", "terca", "quarta", "quinta", "sexta", "sabado", "domingo"]
+    },
+    {
+      "id": 8,
+      "nome": "Pastel de carne com caldo de cana",
+      "disponibilidade": ["quarta", "sabado"]
+    }
+  ],
+  "bebidas": [
+    {
+      "id": 1,
+      "nome": "Coca-Cola 2L",
+      "disponibilidade": ["segunda", "terca", "quarta", "quinta", "sexta", "sabado", "domingo"]
+    },
+    {
+      "id": 2,
+      "nome": "Coca-Cola lata 350ml",
+      "disponibilidade": ["segunda", "terca", "quarta", "quinta", "sexta", "sabado", "domingo"]
+    },
+    {
+      "id": 3,
+      "nome": "Guaraná Antarctica 2L",
+      "disponibilidade": ["segunda", "terca", "quarta", "quinta", "sexta", "sabado", "domingo"]
+    },
+    {
+      "id": 4,
+      "nome": "Guaraná Antarctica lata 350ml",
+      "disponibilidade": ["segunda", "terca", "quarta", "quinta", "sexta", "sabado", "domingo"]
+    },
+    {
+      "id": 5,
+      "nome": "Água mineral 500ml sem gás",
+      "disponibilidade": ["segunda", "terca", "quarta", "quinta", "sexta", "sabado", "domingo"]
+    },
+    {
+      "id": 6,
+      "nome": "Água mineral 500ml com gás",
+      "disponibilidade": ["segunda", "terca", "quarta", "quinta", "sexta", "sabado", "domingo"]
+    },
+    {
+      "id": 7,
+      "nome": "Suco de laranja natural 500ml",
+      "disponibilidade": ["segunda", "terca", "quarta", "quinta", "sexta"]
+    },
+    {
+      "id": 8,
+      "nome": "Cerveja Heineken 600ml",
+      "disponibilidade": ["quinta", "sexta", "sabado", "domingo"]
+    },
+    {
+      "id": 9,
+      "nome": "Cerveja Skol lata 350ml",
+      "disponibilidade": ["segunda", "terca", "quarta", "quinta", "sexta", "sabado", "domingo"]
+    },
+    {
+      "id": 10,
+      "nome": "Cerveja Brahma lata 350ml",
+      "disponibilidade": ["segunda", "terca", "quarta", "quinta", "sexta", "sabado", "domingo"]
+    },
+    {
+      "id": 11,
+      "nome": "Caipirinha de limão",
+      "disponibilidade": ["quinta", "sexta", "sabado", "domingo"]
+    },
+    {
+      "id": 12,
+      "nome": "Suco de maracujá 400ml",
+      "disponibilidade": ["segunda", "terca", "quarta", "quinta", "sexta"]
+    }
+  ]
+}

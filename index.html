@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comanda — Bar do Júlio</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./style/base.css">
+<link rel="stylesheet" href="./style/index.css">
+</head>
+
+<body>
+
+<h1 class="brand">Bar do Júlio</h1>
+<p class="subtitle">Sistema de Comanda Digital</p>
+
+<!-- ── PAINEL DO DIA ── -->
+<div class="dia-panel" id="dia-panel">
+
+  <div class="dia-selector-row">
+    <span class="dia-label">Dia de operação:</span>
+    <div class="dia-btns" id="dia-btns">
+      <button class="dia-btn" data-dia="segunda">SEG</button>
+      <button class="dia-btn" data-dia="terca">TER</button>
+      <button class="dia-btn" data-dia="quarta">QUA</button>
+      <button class="dia-btn" data-dia="quinta">QUI</button>
+      <button class="dia-btn" data-dia="sexta">SEX</button>
+      <button class="dia-btn" data-dia="sabado">SÁB</button>
+      <button class="dia-btn" data-dia="domingo">DOM</button>
+    </div>
+    <button class="dia-toggle" id="dia-toggle" onclick="toggleCardapioDia()">
+      ver cardápio ▾
+    </button>
+  </div>
+
+  <div class="cardapio-dia" id="cardapio-dia">
+    <div class="cardapio-dia-inner" id="cardapio-dia-inner">
+      <!-- preenchido via JS -->
+    </div>
+  </div>
+
+</div>
+
+<div class="card">
+  <div class="comanda-header">
+    <div class="logo">Bar do Júlio</div>
+    <div class="tagline">Comanda de Pedido — Delivery</div>
+  </div>
+
+  <!-- Nº e nome -->
+  <div class="row">
+    <div class="field-group narrow">
+      <label>
+        Nº da Comanda
+        <span id="hint-ultima-comanda" class="hint-ultima"></span>
+      </label>
+      <input type="number" id="num-comanda" min="1" placeholder="001">
+    </div>
+    <div class="field-group">
+      <label>Nome do Cliente</label>
+      <input type="text" id="nome-cliente" placeholder="Ex: João Silva">
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Pratos -->
+  <div class="items-header">
+    <span class="items-title">🍽 Pratos</span>
+  </div>
+  <div id="pratos-list"></div>
+  <button class="add-btn" onclick="addItem('prato')">
+    <span class="plus">+</span> Adicionar prato
+  </button>
+
+  <hr class="divider">
+
+  <!-- Bebidas -->
+  <div class="items-header">
+    <span class="items-title">🥤 Bebidas</span>
+  </div>
+  <div id="bebidas-list"></div>
+  <button class="add-btn" onclick="addItem('bebida')">
+    <span class="plus">+</span> Adicionar bebida
+  </button>
+
+  <hr class="divider">
+
+  <!-- Pagamento -->
+  <div class="items-header">
+    <span class="items-title">💰 Pagamento</span>
+  </div>
+
+  <div class="row" style="margin-bottom: 14px;">
+    <div class="field-group">
+      <label>Valor Total (R$)</label>
+      <input type="text" id="valor-total" placeholder="Ex: 45,90" oninput="formatarValor(this)">
+    </div>
+  </div>
+
+  <div>
+    <label>Forma de Pagamento</label>
+    <div class="payment-options">
+      <button class="pay-btn" data-value="Dinheiro" onclick="selectPay(this)">💵 Dinheiro</button>
+      <button class="pay-btn" data-value="Pix" onclick="selectPay(this)">📲 Pix</button>
+      <button class="pay-btn" data-value="Débito" onclick="selectPay(this)">💳 Débito</button>
+      <button class="pay-btn" data-value="Crédito" onclick="selectPay(this)">💳 Crédito</button>
+      <button class="pay-btn" data-value="Outro" onclick="selectPay(this)">✏️ Outro</button>
+    </div>
+    <input type="hidden" id="forma-pagamento" value="">
+    <div id="print-forma-pagamento" style="display:none"></div>
+  </div>
+
+  <!-- Outro — aparece só quando Outro selecionado -->
+  <div id="outro-group">
+    <label>Descreva a forma de pagamento</label>
+    <input type="text" id="outro-desc" placeholder="Ex: Vale-refeição, cheque...">
+  </div>
+
+  <!-- Troco — aparece só quando Dinheiro selecionado -->
+  <div id="troco-group">
+    <label>Troco para (R$)</label>
+    <input type="text" id="troco-para" placeholder="Ex: 50,00" oninput="formatarValor(this)">
+  </div>
+
+  <!-- Timestamp (só aparece na impressão) -->
+  <div class="print-timestamp" id="print-timestamp"></div>
+
+  <div class="actions">
+    <button class="btn-print" onclick="abrirRevisao()">👁 Revisar e Concluir</button>
+    <button class="btn-clear" onclick="limpar()">Limpar</button>
+    <a class="btn-historico" href="./historico.html">📋 Histórico</a>
+    <a class="btn-historico" href="./cardapio-editor.html">🍽 Cardápio</a>
+  </div>
+</div>
+
+<!-- ── TELA DE REVISÃO ── -->
+<div id="revisao-overlay" class="revisao-overlay" style="display:none">
+  <div class="revisao-wrapper">
+
+    <div class="revisao-topbar">
+      <span class="revisao-titulo">Revisão da Comanda</span>
+      <span class="revisao-aviso">Confira os dados antes de imprimir</span>
+    </div>
+
+    <!-- Preview da comanda (gerado via JS) -->
+    <div class="revisao-preview" id="revisao-preview"></div>
+
+    <div class="revisao-actions">
+      <button class="btn-editar" onclick="fecharRevisao()">✏️ Editar Comanda</button>
+      <button class="btn-confirmar" onclick="confirmarImpressao()">🖨 Imprimir Comanda</button>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="./script/utils.js" defer></script>
+<script src="./script/index.js" defer></script>
+
+</body>
+</html>

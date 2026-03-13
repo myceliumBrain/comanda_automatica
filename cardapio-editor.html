@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cardápio — Bar do Júlio</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./style/base.css">
+<link rel="stylesheet" href="./style/cardapio.css">
+</head>
+<body>
+
+<div class="top-bar">
+  <a class="back-link" href="./index.html">← Voltar</a>
+  <div class="top-center">
+    <span class="top-logo">Bar do Júlio</span>
+    <span class="top-sub">Editor de Cardápio</span>
+  </div>
+  <div class="top-right">
+    <button class="btn-export" onclick="exportarJSON()">⬇ Exportar JSON</button>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- Aviso sobre funcionamento -->
+  <div class="info-banner">
+    <span class="info-icon">ℹ</span>
+    <span>As alterações ficam salvas neste navegador. Use <strong>Exportar JSON</strong> para gerar o arquivo e substituir o <code>cardapio.json</code> do projeto.</span>
+  </div>
+
+  <div class="editor-grid">
+
+    <!-- PRATOS -->
+    <section class="editor-section">
+      <div class="section-header">
+        <span class="section-title">🍽 Pratos</span>
+        <span class="section-count" id="count-pratos">0 itens</span>
+      </div>
+
+      <div class="item-list" id="list-pratos"></div>
+
+      <!-- Formulário adicionar prato -->
+      <div class="add-form" id="form-prato">
+        <div class="add-form-title">+ Novo prato</div>
+        <div class="form-field">
+          <label>Nome do prato</label>
+          <input type="text" id="new-prato-nome" placeholder="Ex: Frango grelhado com legumes">
+        </div>
+        <div class="form-field">
+          <label>Disponibilidade <span class="label-hint">(selecione os dias)</span></label>
+          <div class="dias-check" id="dias-prato">
+            <label class="dia-check"><input type="checkbox" value="segunda"> SEG</label>
+            <label class="dia-check"><input type="checkbox" value="terca"> TER</label>
+            <label class="dia-check"><input type="checkbox" value="quarta"> QUA</label>
+            <label class="dia-check"><input type="checkbox" value="quinta"> QUI</label>
+            <label class="dia-check"><input type="checkbox" value="sexta"> SEX</label>
+            <label class="dia-check"><input type="checkbox" value="sabado"> SÁB</label>
+            <label class="dia-check"><input type="checkbox" value="domingo"> DOM</label>
+          </div>
+          <button class="btn-todos" onclick="toggleTodos('dias-prato')">todos / nenhum</button>
+        </div>
+        <button class="btn-add" onclick="adicionarItem('prato')">Adicionar prato</button>
+      </div>
+    </section>
+
+    <!-- BEBIDAS -->
+    <section class="editor-section">
+      <div class="section-header">
+        <span class="section-title">🥤 Bebidas</span>
+        <span class="section-count" id="count-bebidas">0 itens</span>
+      </div>
+
+      <div class="item-list" id="list-bebidas"></div>
+
+      <!-- Formulário adicionar bebida -->
+      <div class="add-form" id="form-bebida">
+        <div class="add-form-title">+ Nova bebida</div>
+        <div class="form-field">
+          <label>Nome da bebida</label>
+          <input type="text" id="new-bebida-nome" placeholder="Ex: Suco de abacaxi 400ml">
+        </div>
+        <div class="form-field">
+          <label>Disponibilidade <span class="label-hint">(selecione os dias)</span></label>
+          <div class="dias-check" id="dias-bebida">
+            <label class="dia-check"><input type="checkbox" value="segunda"> SEG</label>
+            <label class="dia-check"><input type="checkbox" value="terca"> TER</label>
+            <label class="dia-check"><input type="checkbox" value="quarta"> QUA</label>
+            <label class="dia-check"><input type="checkbox" value="quinta"> QUI</label>
+            <label class="dia-check"><input type="checkbox" value="sexta"> SEX</label>
+            <label class="dia-check"><input type="checkbox" value="sabado"> SÁB</label>
+            <label class="dia-check"><input type="checkbox" value="domingo"> DOM</label>
+          </div>
+          <button class="btn-todos" onclick="toggleTodos('dias-bebida')">todos / nenhum</button>
+        </div>
+        <button class="btn-add" onclick="adicionarItem('bebida')">Adicionar bebida</button>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- Modal de edição -->
+<div id="modal-overlay" class="modal-overlay" style="display:none" onclick="fecharModal(event)">
+  <div class="modal">
+    <div class="modal-title">Editar item</div>
+    <input type="hidden" id="edit-tipo">
+    <input type="hidden" id="edit-id">
+    <div class="form-field">
+      <label>Nome</label>
+      <input type="text" id="edit-nome">
+    </div>
+    <div class="form-field">
+      <label>Disponibilidade</label>
+      <div class="dias-check" id="dias-edit">
+        <label class="dia-check"><input type="checkbox" value="segunda"> SEG</label>
+        <label class="dia-check"><input type="checkbox" value="terca"> TER</label>
+        <label class="dia-check"><input type="checkbox" value="quarta"> QUA</label>
+        <label class="dia-check"><input type="checkbox" value="quinta"> QUI</label>
+        <label class="dia-check"><input type="checkbox" value="sexta"> SEX</label>
+        <label class="dia-check"><input type="checkbox" value="sabado"> SÁB</label>
+        <label class="dia-check"><input type="checkbox" value="domingo"> DOM</label>
+      </div>
+      <button class="btn-todos" onclick="toggleTodos('dias-edit')">todos / nenhum</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="fecharModal()">Cancelar</button>
+      <button class="btn-modal-save" onclick="salvarEdicao()">Salvar alterações</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="./script/utils.js"></script>
+<script src="./script/cardapio.js"></script>
+</body>
+</html>

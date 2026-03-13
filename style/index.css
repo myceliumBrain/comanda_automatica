@@ -1,0 +1,493 @@
+/* index.css — específico da comanda principal
+   Depende de: base.css                         */
+
+/* ── LAYOUT DA PÁGINA ── */
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+h1.brand {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.4rem;
+  color: var(--paper);
+  letter-spacing: 0.12em;
+  margin-bottom: 6px;
+  text-align: center;
+}
+.subtitle {
+  color: var(--amber);
+  font-size: 0.72rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* ── PAINEL DO DIA ── */
+.dia-panel {
+  width: 100%;
+  max-width: 560px;
+  margin-bottom: 20px;
+}
+.dia-selector-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.dia-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.dia-btns {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+.dia-btn {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.12);
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  padding: 5px 9px;
+  cursor: pointer;
+  transition: all .15s;
+  border-radius: 1px;
+}
+.dia-btn:hover { border-color: var(--amber); color: var(--amber); }
+.dia-btn.ativo { background: var(--amber); border-color: var(--amber); color: var(--ink); font-weight: 700; }
+
+.dia-toggle {
+  background: none;
+  border: 1px dashed rgba(255,255,255,.15);
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color .15s, border-color .15s;
+}
+.dia-toggle:hover,
+.dia-toggle.aberto { color: var(--amber); border-color: var(--amber); }
+
+.cardapio-dia {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height .3s ease, opacity .25s ease, margin .25s ease;
+  margin-top: 0;
+}
+.cardapio-dia.aberto { max-height: 600px; opacity: 1; margin-top: 12px; }
+
+.cardapio-dia-inner {
+  background: rgba(253,248,240,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  border-left: 3px solid var(--amber);
+  padding: 16px 20px;
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.cardapio-col { flex: 1; min-width: 180px; }
+.cardapio-col-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  color: var(--amber);
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed rgba(255,255,255,.15);
+}
+.cardapio-item {
+  font-size: 0.72rem;
+  color: rgba(253,248,240,.75);
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  line-height: 1.4;
+}
+.cardapio-item:last-child { border-bottom: none; }
+.cardapio-vazio { font-size: 0.7rem; color: var(--muted); font-style: italic; }
+
+/* ── CARD DA COMANDA ── */
+.card {
+  background: var(--paper);
+  width: 100%;
+  max-width: 560px;
+  border-radius: 2px;
+  padding: 36px 40px;
+  box-shadow: 0 8px 40px rgba(0,0,0,.55), 0 2px 0 var(--amber);
+  position: relative;
+}
+.card::before, .card::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 6px;
+  background: repeating-linear-gradient(90deg, var(--paper) 0 8px, var(--bg) 8px 12px);
+}
+.card::before { top: 0; }
+.card::after  { bottom: 0; }
+
+.comanda-header {
+  text-align: center;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 16px;
+  margin-bottom: 28px;
+}
+.comanda-header .logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.6rem;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  line-height: 1;
+}
+.comanda-header .tagline {
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+/* ── CAMPOS ── */
+.row { display: flex; gap: 14px; align-items: flex-end; }
+.field-group { flex: 1; }
+.field-group.narrow { flex: 0 0 120px; }
+
+label {
+  display: block;
+  font-size: 0.62rem;
+  letter-spacing: 0.25em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.divider {
+  border: none;
+  border-top: 1px dashed var(--border);
+  margin: 24px 0;
+}
+
+/* ── ITENS (pratos e bebidas) ── */
+.items-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.items-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.1em;
+  color: var(--ink);
+}
+
+.item-card {
+  background: var(--field-bg);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--amber);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  position: relative;
+  animation: slideIn .2s ease;
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.item-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.95rem;
+  color: var(--amber);
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
+.remove-btn {
+  position: absolute;
+  top: 10px; right: 12px;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  padding: 3px 8px;
+  cursor: pointer;
+  font-family: 'IBM Plex Mono', monospace;
+  text-transform: uppercase;
+  transition: background .12s, color .12s, border-color .12s;
+}
+.remove-btn:hover { background: var(--red); color: #fff; border-color: var(--red); }
+
+.add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: none;
+  border: 1.5px dashed var(--border);
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 10px 16px;
+  cursor: pointer;
+  width: 100%;
+  transition: border-color .15s, color .15s;
+  margin-top: 4px;
+}
+.add-btn:hover { border-color: var(--amber); color: var(--amber); }
+.add-btn .plus { font-size: 1.1rem; }
+
+/* ── HINT ÚLTIMA COMANDA ── */
+.hint-ultima {
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  color: var(--amber);
+  font-style: italic;
+  margin-left: 6px;
+  text-transform: none;
+}
+
+/* ── AUTOCOMPLETE ── */
+.ac-wrapper { position: relative; }
+.autocomplete-list {
+  display: none;
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0; right: 0;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--amber);
+  list-style: none;
+  z-index: 100;
+  max-height: 180px;
+  overflow-y: auto;
+  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+}
+.autocomplete-item {
+  padding: 8px 12px;
+  font-size: 0.82rem;
+  color: var(--ink);
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background .1s;
+}
+.autocomplete-item:last-child { border-bottom: none; }
+.autocomplete-item:hover { background: var(--field-bg); color: var(--amber); }
+
+/* ── PAGAMENTO ── */
+.payment-options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+.pay-btn {
+  flex: 1;
+  min-width: 100px;
+  background: var(--field-bg);
+  border: 1.5px solid var(--border);
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 10px 8px;
+  cursor: pointer;
+  transition: all .15s;
+  text-align: center;
+}
+.pay-btn:hover { border-color: var(--amber); color: var(--amber); }
+.pay-btn.selected { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+
+#troco-group, #outro-group {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height .25s ease, opacity .2s ease, margin .2s ease;
+  margin-top: 0;
+}
+#troco-group.visible, #outro-group.visible {
+  max-height: 80px;
+  opacity: 1;
+  margin-top: 14px;
+}
+
+/* ── AÇÕES ── */
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 2px solid var(--ink);
+}
+.btn-print {
+  flex: 1;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: 0.2em;
+  padding: 14px;
+  border: none;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+}
+.btn-print:hover { background: var(--amber); }
+.btn-print:active { transform: scale(.98); }
+
+.btn-clear {
+  background: none;
+  border: 1.5px solid var(--border);
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 14px 18px;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.btn-clear:hover { border-color: var(--red); color: var(--red); }
+
+.btn-historico {
+  background: none;
+  border: 1.5px solid var(--border);
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+.btn-historico:hover { border-color: var(--amber); color: var(--amber); }
+
+/* ── TELA DE REVISÃO ── */
+.revisao-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 200;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 20px 60px;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,.04) 39px, rgba(255,255,255,.04) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,.04) 39px, rgba(255,255,255,.04) 40px);
+  animation: fadeInOverlay .2s ease;
+}
+@keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
+
+.revisao-wrapper { width: 100%; max-width: 560px; padding-top: 32px; }
+.revisao-topbar { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
+.revisao-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 0.15em; color: var(--paper); }
+.revisao-aviso { font-size: 0.65rem; letter-spacing: 0.25em; color: var(--amber); text-transform: uppercase; margin-top: 4px; }
+
+.revisao-preview {
+  background: var(--paper);
+  width: 100%;
+  border-radius: 2px;
+  padding: 28px 32px;
+  box-shadow: 0 8px 40px rgba(0,0,0,.55), 0 2px 0 var(--amber);
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--ink);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.prev-logo { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 0.08em; text-align: center; line-height: 1; }
+.prev-tagline { font-size: 0.6rem; letter-spacing: 0.25em; color: var(--muted); text-transform: uppercase; text-align: center; margin-top: 3px; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+.prev-row { display: flex; gap: 20px; margin-bottom: 10px; flex-wrap: wrap; }
+.prev-field { flex: 1; }
+.prev-label { font-size: 0.58rem; letter-spacing: 0.25em; color: var(--muted); text-transform: uppercase; margin-bottom: 2px; }
+.prev-value { font-size: 0.9rem; font-weight: 700; color: var(--ink); border-bottom: 1px dashed var(--border); padding-bottom: 3px; }
+.prev-divider { border: none; border-top: 1px dashed var(--border); margin: 14px 0; }
+.prev-section-title { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 0.1em; color: var(--ink); margin-bottom: 8px; }
+.prev-item { border-left: 3px solid var(--amber); padding: 6px 10px; margin-bottom: 6px; background: var(--field-bg); }
+.prev-item-nome { font-size: 0.85rem; }
+.prev-item-obs { font-size: 0.75rem; color: var(--muted); font-style: italic; margin-top: 3px; padding-left: 8px; border-left: 2px solid var(--border); }
+.prev-pagamento { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 4px; }
+.prev-timestamp { font-size: 0.62rem; color: var(--muted); text-align: right; margin-top: 14px; letter-spacing: 0.12em; }
+
+.revisao-actions { display: flex; gap: 12px; margin-top: 20px; }
+.btn-editar {
+  flex: 1;
+  background: none;
+  border: 1.5px solid var(--border);
+  color: var(--paper);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 14px;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.btn-editar:hover { border-color: var(--amber); color: var(--amber); }
+.btn-confirmar {
+  flex: 2;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: 0.2em;
+  padding: 14px;
+  border: none;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+}
+.btn-confirmar:hover { background: var(--amber); }
+.btn-confirmar:active { transform: scale(.98); }
+
+/* ── IMPRESSÃO ── */
+@media print {
+  @page { size: 80mm auto; margin: 4mm 3mm; }
+  body { background: none; padding: 0; }
+  h1.brand, .subtitle, .dia-panel, .actions, .add-btn, .remove-btn, .revisao-overlay { display: none !important; }
+
+  .card { box-shadow: none; padding: 0; max-width: 100%; border-radius: 0; }
+  .card::before, .card::after { display: none; }
+
+  input, textarea { border: none; border-bottom: 1px dashed #999; background: none; padding: 2px 0; font-size: 10pt; }
+  .item-card { border-left: 2px solid #999; padding: 6px 8px; background: none; }
+  .comanda-header .logo { font-size: 22pt; }
+  .comanda-header .tagline { font-size: 7pt; }
+  label { font-size: 6.5pt; }
+  .items-title { font-size: 12pt; }
+  .item-num { font-size: 9pt; }
+  .divider { border-top: 1px dashed #aaa; }
+
+  .payment-options { display: none; }
+  #print-forma-pagamento { display: block !important; font-size: 9pt; color: #000; font-weight: bold; margin-top: 4px; }
+  .obs-group { display: none !important; }
+  .obs-group.print-visible { display: block !important; }
+  .item-card.print-hide { display: none !important; }
+  #outro-group { display: none !important; }
+  #troco-group:not(.print-visible) { display: none !important; }
+  #troco-group.print-visible { display: block !important; }
+
+  .print-timestamp { display: block !important; font-size: 7pt; color: #666; text-align: right; margin-top: 10px; letter-spacing: 0.15em; }
+}
+.print-timestamp { display: none; }

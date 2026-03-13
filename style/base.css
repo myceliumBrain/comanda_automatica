@@ -1,0 +1,146 @@
+/* ═══════════════════════════════════════
+   BASE.CSS — Bar do Júlio
+   Compartilhado por todas as páginas
+   ═══════════════════════════════════════ */
+
+/* ── VARIÁVEIS ── */
+:root {
+  --paper:     #fdf8f0;
+  --ink:       #1a1208;
+  --red:       #c0392b;
+  --amber:     #e67e22;
+  --muted:     #8a7a66;
+  --border:    #d4c9b8;
+  --field-bg:  #fff9ef;
+  --green:     #27ae60;
+  --bg:        #2c1f0e;
+}
+
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── BODY BASE ── */
+body {
+  background: var(--bg);
+  min-height: 100vh;
+  font-family: 'IBM Plex Mono', monospace;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,.04) 39px, rgba(255,255,255,.04) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,.04) 39px, rgba(255,255,255,.04) 40px);
+}
+
+/* ── TOP BAR (histórico, cardápio) ── */
+.top-bar {
+  background: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px;
+  gap: 16px;
+  flex-wrap: wrap;
+  border-bottom: 3px solid var(--amber);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.back-link {
+  color: var(--amber);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color .15s;
+  white-space: nowrap;
+}
+.back-link:hover { color: var(--paper); }
+
+.top-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+.top-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  color: var(--paper);
+  letter-spacing: 0.1em;
+  line-height: 1;
+}
+.top-sub {
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  color: var(--amber);
+  text-transform: uppercase;
+}
+.top-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── INPUTS GENÉRICOS ── */
+input[type="text"],
+input[type="number"],
+textarea {
+  width: 100%;
+  background: var(--field-bg);
+  border: 1px solid var(--border);
+  border-bottom: 2px solid var(--ink);
+  padding: 9px 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.88rem;
+  color: var(--ink);
+  outline: none;
+  border-radius: 0;
+  transition: border-color .15s, background .15s;
+}
+input:focus, textarea:focus {
+  border-color: var(--amber);
+  border-bottom-color: var(--amber);
+  background: #fff;
+}
+textarea { resize: vertical; min-height: 52px; }
+
+input[type="date"] {
+  background: #2e2010;
+  border: 1px solid #5a3e20;
+  color: var(--paper);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  padding: 6px 10px;
+  outline: none;
+  cursor: pointer;
+  border-radius: 0;
+}
+input[type="date"]:focus { border-color: var(--amber); }
+
+/* ── TOAST ── */
+#toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  opacity: 0;
+  transition: opacity .3s, transform .3s;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 999;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── PÁGINA INTERNA (histórico, cardápio) ── */
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 20px 80px;
+}
+.page.narrow { max-width: 900px; }
