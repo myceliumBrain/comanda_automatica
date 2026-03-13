@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agendamentos — Bar do Júlio</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./style/base.css">
+<link rel="stylesheet" href="./style/agendamentos.css">
+</head>
+<body>
+
+<div class="top-bar">
+  <a class="back-link" href="./index.html">← Comanda</a>
+  <div class="top-center">
+    <div class="top-logo">Bar do Júlio</div>
+    <div class="top-sub">Agendamentos</div>
+  </div>
+  <div class="top-right"></div>
+</div>
+
+<div class="page narrow">
+
+  <!-- ── FORMULÁRIO NOVO AGENDAMENTO ── -->
+  <section class="ag-section">
+    <div class="ag-section-title">Novo Agendamento</div>
+
+    <div class="ag-form">
+      <div class="ag-form-row">
+        <div class="ag-field">
+          <label>Cliente / Empresa</label>
+          <input type="text" id="ag-cliente" placeholder="Ex: Empresa X, João Silva...">
+        </div>
+        <div class="ag-field narrow">
+          <label>Data</label>
+          <input type="date" id="ag-data">
+        </div>
+      </div>
+      <div class="ag-form-row">
+        <div class="ag-field">
+          <label>Horário do pedido <span class="ag-label-opcional">(quando começa)</span></label>
+          <input type="time" id="ag-hora-pedido">
+        </div>
+        <div class="ag-field">
+          <label>Horário de envio <span class="ag-label-opcional">(quando sai)</span></label>
+          <input type="time" id="ag-hora-envio">
+        </div>
+      </div>
+      <div class="ag-field">
+        <label>Observação <span class="ag-label-opcional">(opcional)</span></label>
+        <input type="text" id="ag-obs" placeholder="Ex: Pede almoço todo dia, itens variáveis">
+      </div>
+      <div class="ag-form-footer">
+        <div class="ag-aviso-variaveis">
+          💡 Os itens do pedido são preenchidos na hora, ao abrir a comanda.
+        </div>
+        <button class="ag-btn-salvar" onclick="salvarNovoAgendamento()">＋ Salvar Agendamento</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FILTRO ── -->
+  <section class="ag-section">
+    <div class="ag-filtro-row">
+      <div class="ag-section-title" style="margin-bottom:0">Agendamentos Salvos</div>
+      <div class="ag-filtro-btns">
+        <button class="ag-filtro-btn ativo" data-filtro="futuros" onclick="setFiltro(this, 'futuros')">Próximos</button>
+        <button class="ag-filtro-btn" data-filtro="todos" onclick="setFiltro(this, 'todos')">Todos</button>
+        <button class="ag-filtro-btn" data-filtro="concluidos" onclick="setFiltro(this, 'concluidos')">Concluídos</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── LISTA ── -->
+  <div id="ag-lista">
+    <!-- preenchido via JS -->
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<script src="./script/utils.js" defer></script>
+<script src="./script/agendamentos.js" defer></script>
+
+</body>
+</html>

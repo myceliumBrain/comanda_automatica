@@ -8,6 +8,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./style/base.css">
 <link rel="stylesheet" href="./style/index.css">
+<style>
+  body { opacity: 0; transition: opacity .3s ease; }
+  body.pronto { opacity: 1; }
+</style>
 </head>
 
 <body>
@@ -19,15 +23,17 @@
 <div class="dia-panel" id="dia-panel">
 
   <div class="dia-selector-row">
-    <span class="dia-label">Dia de operação:</span>
-    <div class="dia-btns" id="dia-btns">
-      <button class="dia-btn" data-dia="segunda">SEG</button>
-      <button class="dia-btn" data-dia="terca">TER</button>
-      <button class="dia-btn" data-dia="quarta">QUA</button>
-      <button class="dia-btn" data-dia="quinta">QUI</button>
-      <button class="dia-btn" data-dia="sexta">SEX</button>
-      <button class="dia-btn" data-dia="sabado">SÁB</button>
-      <button class="dia-btn" data-dia="domingo">DOM</button>
+    <div class="dia-label-btns">
+      <span class="dia-label">Dia de operação:</span>
+      <div class="dia-btns" id="dia-btns">
+        <button class="dia-btn" data-dia="segunda">SEG</button>
+        <button class="dia-btn" data-dia="terca">TER</button>
+        <button class="dia-btn" data-dia="quarta">QUA</button>
+        <button class="dia-btn" data-dia="quinta">QUI</button>
+        <button class="dia-btn" data-dia="sexta">SEX</button>
+        <button class="dia-btn" data-dia="sabado">SÁB</button>
+        <button class="dia-btn" data-dia="domingo">DOM</button>
+      </div>
     </div>
     <button class="dia-toggle" id="dia-toggle" onclick="toggleCardapioDia()">
       ver cardápio ▾
@@ -40,6 +46,20 @@
     </div>
   </div>
 
+</div>
+
+<!-- ── PAINEL DE AGENDADOS DO DIA ── -->
+<div class="agendados-painel" id="agendados-painel">
+  <div class="agendados-header">
+    <div class="agendados-titulo-row">
+      <span class="agendados-titulo">📅 Agendados hoje</span>
+      <span class="agendados-count" id="agendados-count"></span>
+    </div>
+    <a href="./agendamentos.html" class="agendados-link-gerenciar">gerenciar agendamentos →</a>
+  </div>
+  <div class="agendados-lista" id="agendados-lista">
+    <!-- preenchido via JS -->
+  </div>
 </div>
 
 <div class="card">
@@ -109,7 +129,6 @@
       <button class="pay-btn" data-value="Outro" onclick="selectPay(this)">✏️ Outro</button>
     </div>
     <input type="hidden" id="forma-pagamento" value="">
-    <div id="print-forma-pagamento" style="display:none"></div>
   </div>
 
   <!-- Outro — aparece só quando Outro selecionado -->
@@ -124,14 +143,15 @@
     <input type="text" id="troco-para" placeholder="Ex: 50,00" oninput="formatarValor(this)">
   </div>
 
-  <!-- Timestamp (só aparece na impressão) -->
-  <div class="print-timestamp" id="print-timestamp"></div>
 
   <div class="actions">
     <button class="btn-print" onclick="abrirRevisao()">👁 Revisar e Concluir</button>
-    <button class="btn-clear" onclick="limpar()">Limpar</button>
-    <a class="btn-historico" href="./historico.html">📋 Histórico</a>
-    <a class="btn-historico" href="./cardapio-editor.html">🍽 Cardápio</a>
+    <div class="actions-secondary">
+      <button class="btn-clear" onclick="limpar()">Limpar</button>
+      <a class="btn-historico" href="./historico.html">📋 Histórico</a>
+      <a class="btn-historico" href="./agendamentos.html">📅 Agendamentos</a>
+      <a class="btn-historico" href="./cardapio-editor.html">🍽 Cardápio</a>
+    </div>
   </div>
 </div>
 

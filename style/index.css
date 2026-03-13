@@ -8,7 +8,6 @@ body {
   align-items: center;
   padding: 40px 20px;
 }
-
 h1.brand {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 2.4rem;
@@ -32,26 +31,46 @@ h1.brand {
   max-width: 560px;
   margin-bottom: 20px;
 }
+/* Reorganiza em 2 linhas quando necessário:
+   linha 1 → label + dias
+   linha 2 → toggle alinhado à direita */
+@media (max-width: 600px) {
+  .dia-selector-row { flex-wrap: wrap; }
+  .dia-toggle { margin-left: auto; }
+}
 .dia-selector-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
+  gap: 8px;
   flex-wrap: wrap;
+  row-gap: 8px;
+}
+/* Agrupa label + botões — nunca quebra internamente */
+.dia-label-btns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
 }
 .dia-label {
-  font-size: 0.62rem;
-  letter-spacing: 0.2em;
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
   color: var(--muted);
   text-transform: uppercase;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 .dia-btns {
   display: flex;
-  gap: 5px;
-  flex-wrap: wrap;
+  gap: 4px;
+  flex-wrap: nowrap;
   flex: 1;
+  min-width: 0;
 }
 .dia-btn {
+  flex-shrink: 0;
   background: rgba(255,255,255,.06);
   border: 1px solid rgba(255,255,255,.12);
   color: var(--muted);
@@ -65,8 +84,9 @@ h1.brand {
 }
 .dia-btn:hover { border-color: var(--amber); color: var(--amber); }
 .dia-btn.ativo { background: var(--amber); border-color: var(--amber); color: var(--ink); font-weight: 700; }
-
 .dia-toggle {
+  flex-shrink: 0;
+  align-self: flex-start;
   background: none;
   border: 1px dashed rgba(255,255,255,.15);
   color: var(--muted);
@@ -78,10 +98,10 @@ h1.brand {
   cursor: pointer;
   white-space: nowrap;
   transition: color .15s, border-color .15s;
+  margin-left: auto;
 }
 .dia-toggle:hover,
 .dia-toggle.aberto { color: var(--amber); border-color: var(--amber); }
-
 .cardapio-dia {
   overflow: hidden;
   max-height: 0;
@@ -90,7 +110,6 @@ h1.brand {
   margin-top: 0;
 }
 .cardapio-dia.aberto { max-height: 600px; opacity: 1; margin-top: 12px; }
-
 .cardapio-dia-inner {
   background: rgba(253,248,240,.06);
   border: 1px solid rgba(255,255,255,.1);
@@ -120,6 +139,141 @@ h1.brand {
 .cardapio-item:last-child { border-bottom: none; }
 .cardapio-vazio { font-size: 0.7rem; color: var(--muted); font-style: italic; }
 
+/* ── PAINEL AGENDADOS DO DIA ── */
+.agendados-painel {
+  width: 100%;
+  max-width: 560px;
+  margin-bottom: 20px;
+  background: rgba(253,248,240,.04);
+  border: 1px solid rgba(255,255,255,.1);
+  border-left: 3px solid var(--green);
+}
+.agendados-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 10px;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.agendados-titulo-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.agendados-titulo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+  color: var(--paper);
+}
+.agendados-count {
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 1px;
+}
+.agendados-count.pendente {
+  background: rgba(230,126,34,.2);
+  color: var(--amber);
+  border: 1px solid rgba(230,126,34,.35);
+}
+.agendados-count.todos-ok {
+  background: rgba(39,174,96,.15);
+  color: var(--green);
+  border: 1px solid rgba(39,174,96,.3);
+}
+.agendados-link-gerenciar {
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color .15s;
+}
+.agendados-link-gerenciar:hover { color: var(--amber); }
+.agendados-lista {
+  padding: 10px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.agendados-vazio {
+  font-size: 0.7rem;
+  color: var(--muted);
+  font-style: italic;
+  padding: 4px 0;
+}
+.agendado-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 12px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  transition: border-color .15s;
+  flex-wrap: wrap;
+}
+.agendado-card:hover { border-color: rgba(255,255,255,.18); }
+.agendado-card.concluido {
+  opacity: 0.45;
+  background: rgba(39,174,96,.05);
+  border-color: rgba(39,174,96,.2);
+}
+.agendado-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+.agendado-cliente {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--paper);
+  letter-spacing: 0.05em;
+}
+.agendado-horarios {
+  font-size: 0.66rem;
+  color: var(--amber);
+  letter-spacing: 0.08em;
+  font-weight: 500;
+}
+.agendado-obs {
+  font-size: 0.66rem;
+  color: var(--muted);
+  font-style: italic;
+}
+.agendado-acoes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.agendado-btn-abrir {
+  background: var(--green);
+  border: none;
+  color: #fff;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+  white-space: nowrap;
+}
+.agendado-btn-abrir:hover  { background: #2ecc71; }
+.agendado-btn-abrir:active { transform: scale(.97); }
+.agendado-tag-concluido {
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--green);
+}
+
 /* ── CARD DA COMANDA ── */
 .card {
   background: var(--paper);
@@ -139,7 +293,6 @@ h1.brand {
 }
 .card::before { top: 0; }
 .card::after  { bottom: 0; }
-
 .comanda-header {
   text-align: center;
   border-bottom: 2px solid var(--ink);
@@ -165,7 +318,6 @@ h1.brand {
 .row { display: flex; gap: 14px; align-items: flex-end; }
 .field-group { flex: 1; }
 .field-group.narrow { flex: 0 0 120px; }
-
 label {
   display: block;
   font-size: 0.62rem;
@@ -174,7 +326,6 @@ label {
   text-transform: uppercase;
   margin-bottom: 5px;
 }
-
 .divider {
   border: none;
   border-top: 1px dashed var(--border);
@@ -194,7 +345,6 @@ label {
   letter-spacing: 0.1em;
   color: var(--ink);
 }
-
 .item-card {
   background: var(--field-bg);
   border: 1px solid var(--border);
@@ -208,7 +358,6 @@ label {
   from { opacity: 0; transform: translateX(-8px); }
   to   { opacity: 1; transform: translateX(0); }
 }
-
 .item-num {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 0.95rem;
@@ -216,7 +365,6 @@ label {
   letter-spacing: 0.1em;
   margin-bottom: 8px;
 }
-
 .remove-btn {
   position: absolute;
   top: 10px; right: 12px;
@@ -232,7 +380,6 @@ label {
   transition: background .12s, color .12s, border-color .12s;
 }
 .remove-btn:hover { background: var(--red); color: #fff; border-color: var(--red); }
-
 .add-btn {
   display: flex;
   align-items: center;
@@ -315,7 +462,6 @@ label {
 }
 .pay-btn:hover { border-color: var(--amber); color: var(--amber); }
 .pay-btn.selected { background: var(--ink); border-color: var(--ink); color: var(--paper); }
-
 #troco-group, #outro-group {
   overflow: hidden;
   max-height: 0;
@@ -330,15 +476,22 @@ label {
 }
 
 /* ── AÇÕES ── */
+/* Layout: grid 2 colunas
+   col 1: btn-print ocupa as 2 linhas (span)
+   col 2 linha 1: Limpar + Histórico lado a lado
+   col 2 linha 2: Agendamentos + Cardápio lado a lado */
 .actions {
-  display: flex;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 10px;
   margin-top: 28px;
   padding-top: 20px;
   border-top: 2px solid var(--ink);
 }
 .btn-print {
-  flex: 1;
+  grid-column: 1;
+  grid-row: 1 / 3;
   background: var(--ink);
   color: var(--paper);
   font-family: 'Bebas Neue', sans-serif;
@@ -348,38 +501,55 @@ label {
   border: none;
   cursor: pointer;
   transition: background .15s, transform .1s;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 .btn-print:hover { background: var(--amber); }
 .btn-print:active { transform: scale(.98); }
 
+/* Os 4 botões menores ficam em dois pares na coluna 2 */
+.actions-secondary {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 10px;
+}
 .btn-clear {
   background: none;
   border: 1.5px solid var(--border);
   color: var(--muted);
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.18em;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  padding: 14px 18px;
+  padding: 10px 8px;
   cursor: pointer;
   transition: border-color .15s, color .15s;
+  text-align: center;
+  width: 100%;
 }
 .btn-clear:hover { border-color: var(--red); color: var(--red); }
-
 .btn-historico {
   background: none;
   border: 1.5px solid var(--border);
   color: var(--muted);
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.18em;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  padding: 14px 16px;
+  padding: 10px 8px;
   cursor: pointer;
   transition: border-color .15s, color .15s;
   text-decoration: none;
   display: flex;
   align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 .btn-historico:hover { border-color: var(--amber); color: var(--amber); }
 
@@ -400,12 +570,10 @@ label {
   animation: fadeInOverlay .2s ease;
 }
 @keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
-
 .revisao-wrapper { width: 100%; max-width: 560px; padding-top: 32px; }
 .revisao-topbar { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
 .revisao-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 0.15em; color: var(--paper); }
 .revisao-aviso { font-size: 0.65rem; letter-spacing: 0.25em; color: var(--amber); text-transform: uppercase; margin-top: 4px; }
-
 .revisao-preview {
   background: var(--paper);
   width: 100%;
@@ -430,7 +598,6 @@ label {
 .prev-item-obs { font-size: 0.75rem; color: var(--muted); font-style: italic; margin-top: 3px; padding-left: 8px; border-left: 2px solid var(--border); }
 .prev-pagamento { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 4px; }
 .prev-timestamp { font-size: 0.62rem; color: var(--muted); text-align: right; margin-top: 14px; letter-spacing: 0.12em; }
-
 .revisao-actions { display: flex; gap: 12px; margin-top: 20px; }
 .btn-editar {
   flex: 1;
@@ -460,34 +627,3 @@ label {
 }
 .btn-confirmar:hover { background: var(--amber); }
 .btn-confirmar:active { transform: scale(.98); }
-
-/* ── IMPRESSÃO ── */
-@media print {
-  @page { size: 80mm auto; margin: 4mm 3mm; }
-  body { background: none; padding: 0; }
-  h1.brand, .subtitle, .dia-panel, .actions, .add-btn, .remove-btn, .revisao-overlay { display: none !important; }
-
-  .card { box-shadow: none; padding: 0; max-width: 100%; border-radius: 0; }
-  .card::before, .card::after { display: none; }
-
-  input, textarea { border: none; border-bottom: 1px dashed #999; background: none; padding: 2px 0; font-size: 10pt; }
-  .item-card { border-left: 2px solid #999; padding: 6px 8px; background: none; }
-  .comanda-header .logo { font-size: 22pt; }
-  .comanda-header .tagline { font-size: 7pt; }
-  label { font-size: 6.5pt; }
-  .items-title { font-size: 12pt; }
-  .item-num { font-size: 9pt; }
-  .divider { border-top: 1px dashed #aaa; }
-
-  .payment-options { display: none; }
-  #print-forma-pagamento { display: block !important; font-size: 9pt; color: #000; font-weight: bold; margin-top: 4px; }
-  .obs-group { display: none !important; }
-  .obs-group.print-visible { display: block !important; }
-  .item-card.print-hide { display: none !important; }
-  #outro-group { display: none !important; }
-  #troco-group:not(.print-visible) { display: none !important; }
-  #troco-group.print-visible { display: block !important; }
-
-  .print-timestamp { display: block !important; font-size: 7pt; color: #666; text-align: right; margin-top: 10px; letter-spacing: 0.15em; }
-}
-.print-timestamp { display: none; }

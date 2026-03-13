@@ -1,0 +1,254 @@
+/* agendamentos.css — página de gerenciamento de agendamentos
+   Depende de: base.css                                       */
+
+/* ── FORMULÁRIO NOVO AGENDAMENTO ── */
+.ag-section {
+  margin-bottom: 28px;
+}
+.ag-section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.3rem;
+  letter-spacing: 0.12em;
+  color: var(--paper);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.ag-form {
+  background: rgba(253,248,240,.04);
+  border: 1px solid rgba(255,255,255,.1);
+  border-left: 3px solid var(--amber);
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ag-form-row {
+  display: flex;
+  gap: 14px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.ag-field {
+  flex: 1;
+  min-width: 160px;
+}
+.ag-field.narrow {
+  flex: 0 0 160px;
+}
+.ag-field label {
+  display: block;
+  font-size: 0.62rem;
+  letter-spacing: 0.25em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.ag-label-opcional {
+  color: rgba(138,122,102,.6);
+  font-style: italic;
+  font-size: 0.55rem;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.ag-form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+.ag-aviso-variaveis {
+  font-size: 0.66rem;
+  color: var(--muted);
+  font-style: italic;
+  letter-spacing: 0.05em;
+  flex: 1;
+}
+.ag-btn-salvar {
+  background: var(--amber);
+  border: none;
+  color: var(--ink);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.05rem;
+  letter-spacing: 0.2em;
+  padding: 11px 24px;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+  white-space: nowrap;
+}
+.ag-btn-salvar:hover  { background: #f39c12; }
+.ag-btn-salvar:active { transform: scale(.98); }
+
+/* ── FILTRO ── */
+.ag-filtro-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.ag-filtro-btns {
+  display: flex;
+  gap: 6px;
+}
+.ag-filtro-btn {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.12);
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.ag-filtro-btn:hover { border-color: var(--amber); color: var(--amber); }
+.ag-filtro-btn.ativo { background: var(--amber); border-color: var(--amber); color: var(--ink); font-weight: 700; }
+
+/* ── VAZIO ── */
+.ag-vazio {
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-style: italic;
+  padding: 20px 0;
+  text-align: center;
+  letter-spacing: 0.12em;
+}
+
+/* ── GRUPO POR DATA ── */
+.ag-grupo {
+  margin-bottom: 20px;
+}
+.ag-grupo-data {
+  font-size: 0.62rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+  padding-bottom: 5px;
+  border-bottom: 1px dashed rgba(255,255,255,.1);
+}
+.ag-grupo-data.hoje {
+  color: var(--amber);
+  border-bottom-color: rgba(230,126,34,.3);
+}
+
+/* ── ITEM ── */
+.ag-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 16px;
+  background: rgba(253,248,240,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-left: 3px solid var(--amber);
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+  transition: border-color .15s;
+}
+.ag-item:hover { border-color: rgba(255,255,255,.18); border-left-color: var(--amber); }
+.ag-item.concluido {
+  opacity: 0.45;
+  border-left-color: var(--green);
+  background: rgba(39,174,96,.04);
+}
+.ag-item.atrasado {
+  border-left-color: var(--red);
+}
+.ag-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+.ag-item-cliente {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--paper);
+  letter-spacing: 0.04em;
+}
+.ag-item-horarios {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  color: var(--amber);
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  margin-top: 1px;
+}
+.ag-item-obs {
+  font-size: 0.7rem;
+  color: var(--muted);
+  font-style: italic;
+}
+.ag-item-tag {
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  display: inline-block;
+  margin-top: 2px;
+  width: fit-content;
+}
+.ag-item-tag.atrasado-tag { background: rgba(192,57,43,.2); color: #e74c3c; border: 1px solid rgba(192,57,43,.3); }
+.ag-item-tag.concluido-tag { color: var(--green); }
+.ag-item-acoes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.ag-btn-comanda {
+  background: var(--green);
+  border: none;
+  color: #fff;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: background .15s;
+  white-space: nowrap;
+}
+.ag-btn-comanda:hover { background: #2ecc71; }
+.ag-btn-excluir {
+  background: none;
+  border: 1px solid rgba(255,255,255,.12);
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.ag-btn-excluir:hover { border-color: var(--red); color: var(--red); }
+
+/* ── INPUT TIME ── */
+input[type="time"] {
+  background: #2e2010;
+  border: 1px solid #5a3e20;
+  color: var(--paper);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  padding: 6px 10px;
+  outline: none;
+  cursor: pointer;
+  border-radius: 0;
+  width: 100%;
+}
+input[type="time"]:focus { border-color: var(--amber); }
+/* Remove spinner nativo em alguns browsers */
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.6);
+  cursor: pointer;
+}

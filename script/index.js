@@ -51,6 +51,74 @@ function filtrarDisponivel(lista) {
   return lista.filter(item => !item.disponibilidade || item.disponibilidade.includes(diaAtivo));
 }
 
+// ── PAINEL AGENDADOS DO DIA ──
+
+function renderAgendadosDia() {
+  const painel = document.getElementById('agendados-painel');
+  if (!painel) return;
+
+  const lista           = agendamentosHoje(); // utils.js
+  const listaContainer  = document.getElementById('agendados-lista');
+  const contagem        = document.getElementById('agendados-count');
+
+  const pendentes  = lista.filter(a => !a.concluido);
+  const concluidos = lista.filter(a =>  a.concluido);
+
+  if (contagem) {
+    if (pendentes.length) {
+      contagem.textContent = `${pendentes.length} pendente${pendentes.length > 1 ? 's' : ''}`;
+      contagem.className   = 'agendados-count pendente';
+    } else if (concluidos.length) {
+      contagem.textContent = 'todos atendidos ✓';
+      contagem.className   = 'agendados-count todos-ok';
+    } else {
+      contagem.textContent = '';
+      contagem.className   = 'agendados-count';
+    }
+  }
+
+  if (!lista.length) {
+    listaContainer.innerHTML = `<div class="agendados-vazio">Nenhum agendamento para hoje</div>`;
+    return;
+  }
+
+  listaContainer.innerHTML = lista.map(a => {
+    const horarios = [];
+    if (a.horaPedido) horarios.push(`🕐 ${a.horaPedido}`);
+    if (a.horaEnvio)  horarios.push(`🚀 ${a.horaEnvio}`);
+    const horariosHtml = horarios.length
+      ? `<span class="agendado-horarios">${horarios.join(' · ')}</span>`
+      : '';
+    return `
+    <div class="agendado-card ${a.concluido ? 'concluido' : ''}" id="agendado-${a.id}">
+      <div class="agendado-info">
+        <span class="agendado-cliente">${a.cliente}</span>
+        ${horariosHtml}
+        ${a.obs ? `<span class="agendado-obs">${a.obs}</span>` : ''}
+      </div>
+      <div class="agendado-acoes">
+        ${!a.concluido
+          ? `<button class="agendado-btn-abrir" onclick="abrirComandaAgendada(${a.id}, '${escaparAttr(a.cliente)}')">abrir comanda →</button>`
+          : `<span class="agendado-tag-concluido">✓ concluído</span>`
+        }
+      </div>
+    </div>
+  `;
+  }).join('');
+}
+
+function escaparAttr(str) {
+  return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+}
+
+function abrirComandaAgendada(id, cliente) {
+  document.getElementById('nome-cliente').value = cliente;
+  window._agendamentoAtivoId = id;
+  document.querySelector('.card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  setTimeout(() => document.getElementById('nome-cliente').focus(), 400);
+  showToast(`Comanda aberta para ${cliente}`);
+}
+
 // ── AUTOCOMPLETE ──
 
 function buildAutocomplete(input, lista) {
@@ -234,10 +302,10 @@ function abrirRevisao() {
       <div class="prev-field"><div class="prev-label">Nº da Comanda</div><div class="prev-value">#${dados.num}</div></div>
       <div class="prev-field"><div class="prev-label">Nome do Cliente</div><div class="prev-value">${dados.nome}</div></div>
     </div>
-    ${pratosHtml  ? `<hr class="prev-divider"><div class="prev-section-title">🍽 Pratos</div>${pratosHtml}`   : ''}
-    ${bebidasHtml ? `<hr class="prev-divider"><div class="prev-section-title">🥤 Bebidas</div>${bebidasHtml}` : ''}
+    ${pratosHtml  ? `<hr class="prev-divider"><div class="prev-section-title">Pratos</div>${pratosHtml}`   : ''}
+    ${bebidasHtml ? `<hr class="prev-divider"><div class="prev-section-title">Bebidas</div>${bebidasHtml}` : ''}
     <hr class="prev-divider">
-    <div class="prev-section-title">💰 Pagamento</div>
+    <div class="prev-section-title">Pagamento</div>
     <div class="prev-pagamento">
       <div class="prev-field"><div class="prev-label">Valor Total</div><div class="prev-value">R$ ${dados.valor}</div></div>
       <div class="prev-field"><div class="prev-label">Forma</div><div class="prev-value">${dados.forma}</div></div>
@@ -261,27 +329,138 @@ function confirmarImpressao() {
 
   salvarNoHistorico(dados);
 
-  // Prepara elementos para @media print
-  document.getElementById('print-forma-pagamento').textContent = dados.forma;
-  document.getElementById('troco-group').classList.toggle('print-visible', !!dados.troco);
+  // Se esta comanda veio de um agendamento, marca como concluído
+  if (window._agendamentoAtivoId) {
+    marcarAgendamentoConcluido(window._agendamentoAtivoId); // utils.js
+    window._agendamentoAtivoId = null;
+    renderAgendadosDia();
+  }
 
-  document.querySelectorAll('#pratos-list .obs-group').forEach(group => {
-    const ta = group.querySelector('textarea');
-    group.classList.toggle('print-visible', !!(ta && ta.value.trim()));
-  });
+  // Captura o HTML do preview de revisão (já está gerado e perfeito)
+  const previewHtml = document.getElementById('revisao-preview').innerHTML;
 
-  document.querySelectorAll('#bebidas-list .item-card').forEach(card => {
-    const input = card.querySelector('.bebida-input');
-    card.classList.toggle('print-hide', !(input && input.value.trim()));
-  });
+  // Abre janela de impressão isolada com apenas o conteúdo do preview
+  const janela = window.open('', '_blank', 'width=420,height=600');
+  janela.document.write(`<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Comanda</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    @page { size: 80mm auto; margin: 6mm 4mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; color: #000 !important; background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.55;
+      padding: 12px 14px;
+    }
+    .prev-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      letter-spacing: 0.08em;
+      text-align: center;
+      line-height: 1;
+    }
+    .prev-tagline {
+      font-size: 0.58rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      text-align: center;
+      margin-top: 3px;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #000;
+    }
+    .prev-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .prev-field { flex: 1; }
+    .prev-label {
+      font-size: 0.54rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+    .prev-value {
+      font-size: 0.88rem;
+      font-weight: 700;
+      border-bottom: 1px dashed #999;
+      padding-bottom: 2px;
+    }
+    .prev-divider {
+      border: none;
+      border-top: 1px dashed #999;
+      margin: 10px 0;
+    }
+    .prev-section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.95rem;
+      letter-spacing: 0.1em;
+      margin-bottom: 6px;
+    }
+    .prev-item {
+      border-left: 3px solid #000;
+      padding: 5px 9px;
+      margin-bottom: 5px;
+    }
+    .prev-item-nome { font-size: 0.82rem; }
+    .prev-item-obs {
+      font-size: 0.72rem;
+      font-style: italic;
+      margin-top: 2px;
+      padding-left: 7px;
+      border-left: 2px solid #999;
+    }
+    .prev-pagamento { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
+    .prev-timestamp {
+      font-size: 0.58rem;
+      text-align: right;
+      margin-top: 12px;
+      letter-spacing: 0.12em;
+    }
+  </style>
+</head>
+<body>
+  ${previewHtml}
+</body>
+</html>`);
 
-  const now = new Date();
-  document.getElementById('print-timestamp').textContent =
-    `Emitido: ${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+  janela.document.close();
+
+  // Aguarda fontes carregarem antes de imprimir
+  janela.onload = () => {
+    janela.focus();
+    janela.print();
+    janela.addEventListener('afterprint', () => janela.close(), { once: true });
+  };
 
   fecharRevisao();
-  window.addEventListener('afterprint', () => window.location.reload(), { once: true });
-  window.print();
+  limparSemConfirmar();
+}
+
+// Limpa a comanda silenciosamente após imprimir (sem confirm)
+function limparSemConfirmar() {
+  document.getElementById('nome-cliente').value    = '';
+  document.getElementById('pratos-list').innerHTML  = '';
+  document.getElementById('bebidas-list').innerHTML = '';
+  document.getElementById('valor-total').value   = '';
+  document.getElementById('troco-para').value    = '';
+  document.getElementById('outro-desc').value    = '';
+  document.getElementById('forma-pagamento').value = '';
+  document.querySelectorAll('.pay-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('troco-group').classList.remove('visible');
+  document.getElementById('outro-group').classList.remove('visible');
+  pratoCount  = 0;
+  bebidaCount = 0;
+  window._agendamentoAtivoId = null;
+  iniciarNumComanda();
+  addItem('prato');
+  addItem('bebida');
 }
 
 // ── HISTÓRICO ──
@@ -323,6 +502,7 @@ function limpar() {
   document.getElementById('outro-group').classList.remove('visible');
   pratoCount  = 0;
   bebidaCount = 0;
+  window._agendamentoAtivoId = null;
   iniciarNumComanda();
   addItem('prato');
   addItem('bebida');
@@ -349,4 +529,21 @@ carregarCardapioBase().then(c => {  // utils.js
   iniciarNumComanda();
   addItem('prato');
   addItem('bebida');
+
+  // Renderiza agendados do dia
+  renderAgendadosDia();
+
+  // Se vier da página de agendamentos com cliente pré-definido via URL
+  const params = new URLSearchParams(window.location.search);
+  const clienteParam = params.get('cliente');
+  const agendIdParam = params.get('agendId');
+  if (clienteParam) {
+    document.getElementById('nome-cliente').value = decodeURIComponent(clienteParam);
+    if (agendIdParam) window._agendamentoAtivoId = parseInt(agendIdParam, 10);
+  }
+
+  // Exibe a página com fade-in suave (evita flash de layout)
+  requestAnimationFrame(() => {
+    document.body.classList.add('pronto');
+  });
 });
