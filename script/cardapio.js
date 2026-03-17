@@ -36,11 +36,18 @@ function renderLista(tipo) {
       <span class="dia-tag ${item.disponibilidade?.includes(d) ? 'ativo' : ''}">${label}</span>
     `).join('');
 
+    const precoHtml = item.preco > 0
+      ? `<div class="item-preco">R$ ${item.preco.toFixed(2).replace('.', ',')}</div>`
+      : '';
+
     const row = document.createElement('div');
     row.className = 'item-row';
     row.innerHTML = `
       <div class="item-row-body" onclick="abrirModal('${tipo}', ${item.id})">
-        <div class="item-nome">${item.nome}</div>
+        <div class="item-nome-preco">
+          <div class="item-nome">${item.nome}</div>
+          ${precoHtml}
+        </div>
         <div class="item-dias">${diasHtml}</div>
       </div>
       <div class="item-row-actions">
@@ -58,20 +65,23 @@ function adicionarItem(tipo) {
   const nomeId = tipo === 'prato' ? 'new-prato-nome' : 'new-bebida-nome';
   const diasId = tipo === 'prato' ? 'dias-prato'     : 'dias-bebida';
 
-  const nome = document.getElementById(nomeId).value.trim();
+  const precoId = tipo === 'prato' ? 'new-prato-preco' : 'new-bebida-preco';
+  const nome  = document.getElementById(nomeId).value.trim();
   if (!nome) { showToast('Digite o nome do item!'); return; }  // utils.js
 
-  const dias = getDiasSelecionados(diasId);
+  const dias  = getDiasSelecionados(diasId);
   if (!dias.length) { showToast('Selecione ao menos um dia!'); return; }
 
+  const preco  = parseFloat(document.getElementById(precoId).value || '0') || 0;
   const lista  = tipo === 'prato' ? cardapio.pratos : cardapio.bebidas;
   const novoId = lista.length ? Math.max(...lista.map(i => i.id)) + 1 : 1;
 
-  lista.push({ id: novoId, nome, disponibilidade: dias });
+  lista.push({ id: novoId, nome, preco, disponibilidade: dias });
   salvarLocal();
   renderLista(tipo);
 
-  document.getElementById(nomeId).value = '';
+  document.getElementById(nomeId).value  = '';
+  document.getElementById(precoId).value = '0';
   document.querySelectorAll(`#${diasId} input`).forEach(cb => cb.checked = false);
   showToast(`${tipo === 'prato' ? 'Prato' : 'Bebida'} adicionado!`);
 }
@@ -97,9 +107,10 @@ function abrirModal(tipo, id) {
   const item = (tipo === 'prato' ? cardapio.pratos : cardapio.bebidas).find(i => i.id === id);
   if (!item) return;
 
-  document.getElementById('edit-tipo').value = tipo;
-  document.getElementById('edit-id').value   = id;
-  document.getElementById('edit-nome').value = item.nome;
+  document.getElementById('edit-tipo').value  = tipo;
+  document.getElementById('edit-id').value    = id;
+  document.getElementById('edit-nome').value  = item.nome;
+  document.getElementById('edit-preco').value = item.preco ?? 0;
 
   document.querySelectorAll('#dias-edit input').forEach(cb => {
     cb.checked = item.disponibilidade?.includes(cb.value) || false;
@@ -125,24 +136,14 @@ function salvarEdicao() {
   const item = (tipo === 'prato' ? cardapio.pratos : cardapio.bebidas).find(i => i.id === id);
   if (!item) return;
 
-  item.nome = nome;
+  item.nome            = nome;
+  item.preco           = parseFloat(document.getElementById('edit-preco').value || '0') || 0;
   item.disponibilidade = dias;
 
   salvarLocal();
   renderLista(tipo);
   document.getElementById('modal-overlay').style.display = 'none';
   showToast('Item atualizado!');
-}
-
-// ── EXPORTAR JSON ──
-
-function exportarJSON() {
-  const blob = new Blob([JSON.stringify(cardapio, null, 2)], { type: 'application/json' });
-  const url  = URL.createObjectURL(blob);
-  const a    = Object.assign(document.createElement('a'), { href: url, download: 'cardapio.json' });
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('cardapio.json exportado!');
 }
 
 // ── UTILIDADES ──

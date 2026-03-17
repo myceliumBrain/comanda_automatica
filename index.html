@@ -19,34 +19,64 @@
 <h1 class="brand">Bar do Júlio</h1>
 <p class="subtitle">Sistema de Comanda Digital</p>
 
-<!-- ── PAINEL DO DIA ── -->
+<!-- ── MENU (esquerda) ── -->
+<button class="menu-tab" onclick="toggleMenuPainel()">Menu</button>
+
+<div class="menu-panel" id="menu-panel">
+  <div class="menu-panel-header">
+    <span class="menu-panel-titulo">Menu</span>
+    <button class="menu-panel-fechar" onclick="toggleMenuPainel()">✕</button>
+  </div>
+  <nav class="menu-nav">
+    <a class="menu-nav-link" href="./agendamentos.html">📅 Agendamentos</a>
+    <a class="menu-nav-link" href="./cardapio-editor.html">🍽 Cardápio</a>
+    <a class="menu-nav-link" href="./frete-editor.html">🚚 Frete</a>
+    <a class="menu-nav-link" href="./historico.html">📋 Histórico</a>
+  </nav>
+</div>
+
+<!-- ── SIDEBAR DO CARDÁPIO (direita) ── -->
+<button class="cardapio-tab" onclick="toggleCardapioDia()">📋<br>Cardápio</button>
+
 <div class="dia-panel" id="dia-panel">
+  <div class="dia-panel-header">
+    <span class="dia-panel-titulo">Cardápio do Dia</span>
+    <button class="dia-panel-fechar" onclick="toggleCardapioDia()">✕</button>
+  </div>
 
   <div class="dia-selector-row">
-    <div class="dia-label-btns">
-      <span class="dia-label">Dia de operação:</span>
-      <div class="dia-btns" id="dia-btns">
-        <button class="dia-btn" data-dia="segunda">SEG</button>
-        <button class="dia-btn" data-dia="terca">TER</button>
-        <button class="dia-btn" data-dia="quarta">QUA</button>
-        <button class="dia-btn" data-dia="quinta">QUI</button>
-        <button class="dia-btn" data-dia="sexta">SEX</button>
-        <button class="dia-btn" data-dia="sabado">SÁB</button>
-        <button class="dia-btn" data-dia="domingo">DOM</button>
-      </div>
-    </div>
-    <button class="dia-toggle" id="dia-toggle" onclick="toggleCardapioDia()">
-      ver cardápio ▾
-    </button>
-  </div>
-
-  <div class="cardapio-dia" id="cardapio-dia">
-    <div class="cardapio-dia-inner" id="cardapio-dia-inner">
-      <!-- preenchido via JS -->
+    <span class="dia-label">Dia:</span>
+    <div class="dia-btns" id="dia-btns">
+      <button class="dia-btn" data-dia="segunda">SEG</button>
+      <button class="dia-btn" data-dia="terca">TER</button>
+      <button class="dia-btn" data-dia="quarta">QUA</button>
+      <button class="dia-btn" data-dia="quinta">QUI</button>
+      <button class="dia-btn" data-dia="sexta">SEX</button>
+      <button class="dia-btn" data-dia="sabado">SÁB</button>
+      <button class="dia-btn" data-dia="domingo">DOM</button>
     </div>
   </div>
 
+  <div class="cardapio-dia-inner" id="cardapio-dia-inner">
+    <!-- preenchido via JS -->
+  </div>
 </div>
+
+<!-- ── PAINEL DE FRETE (direita, abaixo do cardápio) ── -->
+<button class="frete-tab" onclick="toggleFretePainel()">🚚<br>Frete</button>
+
+<div class="frete-panel" id="frete-panel">
+  <div class="frete-panel-header">
+    <span class="frete-panel-titulo">Tabela de Frete</span>
+    <button class="frete-panel-fechar" onclick="toggleFretePainel()">✕</button>
+  </div>
+  <div class="frete-panel-inner" id="frete-panel-inner">
+    <!-- preenchido via JS -->
+  </div>
+</div>
+
+<!-- Backdrop compartilhado por todos os painéis -->
+<div class="dia-panel-backdrop" id="dia-panel-backdrop" onclick="closeAllPanels()"></div>
 
 <!-- ── PAINEL DE AGENDADOS DO DIA ── -->
 <div class="agendados-painel" id="agendados-painel">
@@ -112,6 +142,20 @@
     <span class="items-title">💰 Pagamento</span>
   </div>
 
+  <!-- Frete -->
+  <div class="row" style="margin-bottom: 14px;">
+    <div class="field-group">
+      <label>Bairro de Entrega</label>
+      <div class="ac-wrapper" id="frete-ac-wrapper">
+        <input type="text" id="frete-bairro" placeholder="Ex: Centro, São Cristovão...">
+      </div>
+    </div>
+    <div class="field-group narrow">
+      <label>Frete (R$)</label>
+      <input type="text" id="frete-valor" placeholder="0,00" oninput="formatarValor(this); recalcularTotal()">
+    </div>
+  </div>
+
   <div class="row" style="margin-bottom: 14px;">
     <div class="field-group">
       <label>Valor Total (R$)</label>
@@ -146,14 +190,10 @@
 
   <div class="actions">
     <button class="btn-print" onclick="abrirRevisao()">👁 Revisar e Concluir</button>
-    <div class="actions-secondary">
-      <button class="btn-clear" onclick="limpar()">Limpar</button>
-      <a class="btn-historico" href="./historico.html">📋 Histórico</a>
-      <a class="btn-historico" href="./agendamentos.html">📅 Agendamentos</a>
-      <a class="btn-historico" href="./cardapio-editor.html">🍽 Cardápio</a>
-    </div>
+    <button class="btn-clear" onclick="limpar()">Limpar</button>
   </div>
 </div>
+
 
 <!-- ── TELA DE REVISÃO ── -->
 <div id="revisao-overlay" class="revisao-overlay" style="display:none">

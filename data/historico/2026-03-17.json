@@ -1,0 +1,68 @@
+[
+  {
+    "id": 1773767361644,
+    "hora": "14:09",
+    "num": "1",
+    "nome": "joaquin nabuco",
+    "pratos": [
+      {
+        "nome": "Frango ao molho com arroz e feijão",
+        "obs": "molho à parte"
+      }
+    ],
+    "bebidas": [
+      {
+        "nome": "Coca-Cola 2L"
+      },
+      {
+        "nome": "Coca-Cola lata 350ml"
+      }
+    ],
+    "valor": "60,00",
+    "forma": "Dinheiro",
+    "troco": "70,00",
+    "cancelado": false
+  },
+  {
+    "id": 1773767655404,
+    "hora": "14:14",
+    "num": "2",
+    "nome": "joaozinho S.A",
+    "pratos": [
+      {
+        "nome": "Frango ao molho com arroz e feijão",
+        "obs": ""
+      }
+    ],
+    "bebidas": [],
+    "valor": "60,00",
+    "forma": "Outro: V.R",
+    "troco": "",
+    "cancelado": false
+  },
+  {
+    "id": 1773772923566,
+    "hora": "15:42",
+    "num": "3",
+    "nome": "joão da silva",
+    "pratos": [
+      {
+        "nome": "Frango ao molho com arroz e feijão",
+        "obs": "com cebloa",
+        "quantidade": 1,
+        "preco": 35.9
+      }
+    ],
+    "bebidas": [
+      {
+        "nome": "Coca-Cola 2L",
+        "quantidade": 2,
+        "preco": 8
+      }
+    ],
+    "valor": "51,90",
+    "forma": "Dinheiro",
+    "troco": "",
+    "cancelado": false
+  }
+]

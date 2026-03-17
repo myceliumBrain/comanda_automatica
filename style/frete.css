@@ -1,0 +1,245 @@
+/* frete.css — editor de tabela de frete
+   Depende de: base.css, cardapio.css (reutiliza .info-banner, .modal-*, .btn-item-*) */
+
+/* ── SEÇÕES ── */
+.frete-section {
+  margin-bottom: 32px;
+}
+
+.frete-section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: 0.12em;
+  color: var(--paper);
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--amber);
+}
+
+/* ── FORMULÁRIO DE ADIÇÃO ── */
+.frete-form {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  background: rgba(253,248,240,.05);
+  border: 1.5px dashed rgba(255,255,255,.15);
+  padding: 16px;
+}
+
+.frete-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+  min-width: 160px;
+}
+
+.frete-field.narrow {
+  flex: 0 0 130px;
+  min-width: 0;
+}
+
+.frete-field label {
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.btn-add-frete {
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.2em;
+  padding: 10px 22px;
+  border: none;
+  cursor: pointer;
+  transition: background .15s;
+  white-space: nowrap;
+  align-self: flex-end;
+}
+.btn-add-frete:hover { background: var(--amber); color: var(--ink); }
+
+/* ── HEADER DA LISTA ── */
+.frete-lista-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--amber);
+}
+
+.frete-count {
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+/* ── LINHAS DA TABELA ── */
+.frete-row {
+  background: var(--paper);
+  border-left: 3px solid var(--border);
+  display: flex;
+  align-items: stretch;
+  margin-bottom: 6px;
+  animation: slideIn .18s ease;
+  transition: border-color .15s;
+}
+.frete-row:hover { border-left-color: var(--amber); }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.frete-row-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  cursor: pointer;
+  gap: 16px;
+}
+
+.frete-bairro {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--ink);
+  transition: color .15s;
+}
+.frete-row-body:hover .frete-bairro { color: var(--amber); }
+
+.frete-preco {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  color: var(--green);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.frete-row-actions {
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--border);
+}
+
+/* Reutiliza .btn-item-edit e .btn-item-del de cardapio.css */
+
+/* ── VAZIO ── */
+.frete-vazio {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-style: italic;
+  padding: 20px 0;
+  letter-spacing: 0.1em;
+}
+
+/* ── INFO BANNER (copiado de cardapio.css para independência) ── */
+.info-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(230,126,34,.12);
+  border: 1px solid rgba(230,126,34,.3);
+  border-left: 3px solid var(--amber);
+  padding: 12px 16px;
+  margin-bottom: 28px;
+  font-size: 0.73rem;
+  color: rgba(253,248,240,.75);
+  line-height: 1.6;
+}
+.info-icon { font-size: 1rem; color: var(--amber); margin-top: 1px; flex-shrink: 0; }
+
+/* ── MODAL (inputs claros sobre fundo papel) ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26,18,8,.85);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal {
+  background: var(--paper);
+  width: 100%;
+  max-width: 380px;
+  padding: 28px 28px 24px;
+  border-top: 3px solid var(--amber);
+}
+.modal-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 0.1em;
+  color: var(--ink);
+  margin-bottom: 18px;
+}
+.form-field { margin-bottom: 14px; }
+.form-field label {
+  display: block;
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.btn-modal-cancel {
+  flex: 1;
+  background: none;
+  border: 1.5px solid var(--border);
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 10px;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.btn-modal-cancel:hover { border-color: var(--red); color: var(--red); }
+.btn-modal-save {
+  flex: 2;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.2em;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  transition: background .15s;
+}
+.btn-modal-save:hover { background: var(--amber); color: var(--ink); }
+
+/* Botões editar/excluir da linha */
+.btn-item-edit,
+.btn-item-del {
+  flex: 1;
+  padding: 0 12px;
+  border: none;
+  cursor: pointer;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: background .12s, color .12s;
+  background: none;
+  color: var(--muted);
+  min-width: 52px;
+}
+.btn-item-edit:hover { background: var(--field-bg); color: var(--amber); }
+.btn-item-del:hover  { background: var(--red); color: #fff; }
+.btn-item-edit + .btn-item-del { border-top: 1px solid var(--border); }

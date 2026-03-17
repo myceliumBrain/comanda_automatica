@@ -1,11 +1,12 @@
-/* index.js — lógica específica da comanda principal
-   Depende de: utils.js                             */
+/* index.js — lógica da comanda principal
+   Depende de: utils.js (window.api já disponível via preload) */
 
 let pratoCount  = 0;
 let bebidaCount = 0;
 let cardapio    = { pratos: [], bebidas: [] };
+let frete       = { bairros: [] };
 
-let diaAtivo = diaAtualSistema();  // utils.js
+let diaAtivo = diaAtualSistema(); // utils.js
 
 // ── PAINEL DO DIA ──
 
@@ -14,109 +15,84 @@ function setDia(dia) {
   document.querySelectorAll('.dia-btn').forEach(btn => {
     btn.classList.toggle('ativo', btn.dataset.dia === dia);
   });
-  if (document.getElementById('cardapio-dia').classList.contains('aberto')) {
+  if (document.getElementById('dia-panel').classList.contains('aberto')) {
     renderCardapioDia();
   }
 }
 
-function toggleCardapioDia() {
-  const painel = document.getElementById('cardapio-dia');
-  const toggle = document.getElementById('dia-toggle');
-  const aberto = painel.classList.toggle('aberto');
-  toggle.classList.toggle('aberto', aberto);
-  toggle.textContent = aberto ? 'fechar cardápio ▴' : 'ver cardápio ▾';
-  if (aberto) renderCardapioDia();
+// ── PAINÉIS (cardápio, frete, menu) ──
+
+function closeAllPanels() {
+  ['dia-panel', 'frete-panel', 'menu-panel'].forEach(id => {
+    document.getElementById(id)?.classList.remove('aberto');
+  });
+  ['.cardapio-tab', '.frete-tab', '.menu-tab'].forEach(sel => {
+    document.querySelector(sel)?.classList.remove('escondido');
+  });
+  document.getElementById('dia-panel-backdrop')?.classList.remove('ativo');
+}
+
+function abrirPainel(panelId, ladoDireito, renderFn) {
+  const painel = document.getElementById(panelId);
+  const jaAberto = painel.classList.contains('aberto');
+  closeAllPanels();
+  if (!jaAberto) {
+    painel.classList.add('aberto');
+    if (ladoDireito) {
+      document.querySelector('.cardapio-tab')?.classList.add('escondido');
+      document.querySelector('.frete-tab')?.classList.add('escondido');
+    } else {
+      document.querySelector('.menu-tab')?.classList.add('escondido');
+    }
+    document.getElementById('dia-panel-backdrop').classList.add('ativo');
+    if (renderFn) renderFn();
+  }
+}
+
+function toggleCardapioDia() { abrirPainel('dia-panel',   true,  renderCardapioDia); }
+function toggleFretePainel()  { abrirPainel('frete-panel', true,  renderFretePainel); }
+function toggleMenuPainel()   { abrirPainel('menu-panel',  false, null); }
+
+function renderFretePainel() {
+  const inner = document.getElementById('frete-panel-inner');
+  if (!frete.bairros.length) {
+    inner.innerHTML = '<div class="frete-panel-vazio">Nenhum bairro cadastrado.</div>';
+    return;
+  }
+  const ordenados = [...frete.bairros].sort((a, b) => a.bairro.localeCompare(b.bairro, 'pt-BR'));
+  inner.innerHTML = ordenados.map(b => `
+    <div class="frete-panel-row">
+      <span class="frete-panel-bairro">${b.bairro}</span>
+      <span class="frete-panel-preco">R$ ${b.preco.toFixed(2).replace('.', ',')}</span>
+    </div>
+  `).join('');
 }
 
 function renderCardapioDia() {
-  const pratos  = cardapio.pratos.filter(p  => !p.disponibilidade  || p.disponibilidade.includes(diaAtivo));
+  const pratos  = cardapio.pratos.filter(p => !p.disponibilidade || p.disponibilidade.includes(diaAtivo));
   const bebidas = cardapio.bebidas.filter(b => !b.disponibilidade || b.disponibilidade.includes(diaAtivo));
 
-  const itemHtml = nome => `<div class="cardapio-item">• ${nome}</div>`;
-  const vazio    = msg  => `<div class="cardapio-vazio">${msg}</div>`;
+  const itemHtml = item => `
+    <div class="cardapio-item">
+      <span class="cardapio-item-nome">• ${item.nome}</span>
+      ${item.preco > 0 ? `<span class="cardapio-item-preco">R$ ${item.preco.toFixed(2).replace('.', ',')}</span>` : ''}
+    </div>`;
+  const vazio = msg => `<div class="cardapio-vazio">${msg}</div>`;
 
   document.getElementById('cardapio-dia-inner').innerHTML = `
     <div class="cardapio-col">
       <div class="cardapio-col-title">🍽 Pratos</div>
-      ${pratos.length  ? pratos.map(p => itemHtml(p.nome)).join('')  : vazio('Nenhum prato disponível')}
+      ${pratos.length  ? pratos.map(itemHtml).join('')  : vazio('Nenhum prato disponível')}
     </div>
     <div class="cardapio-col">
       <div class="cardapio-col-title">🥤 Bebidas</div>
-      ${bebidas.length ? bebidas.map(b => itemHtml(b.nome)).join('') : vazio('Nenhuma bebida disponível')}
+      ${bebidas.length ? bebidas.map(itemHtml).join('') : vazio('Nenhuma bebida disponível')}
     </div>
   `;
 }
 
 function filtrarDisponivel(lista) {
   return lista.filter(item => !item.disponibilidade || item.disponibilidade.includes(diaAtivo));
-}
-
-// ── PAINEL AGENDADOS DO DIA ──
-
-function renderAgendadosDia() {
-  const painel = document.getElementById('agendados-painel');
-  if (!painel) return;
-
-  const lista           = agendamentosHoje(); // utils.js
-  const listaContainer  = document.getElementById('agendados-lista');
-  const contagem        = document.getElementById('agendados-count');
-
-  const pendentes  = lista.filter(a => !a.concluido);
-  const concluidos = lista.filter(a =>  a.concluido);
-
-  if (contagem) {
-    if (pendentes.length) {
-      contagem.textContent = `${pendentes.length} pendente${pendentes.length > 1 ? 's' : ''}`;
-      contagem.className   = 'agendados-count pendente';
-    } else if (concluidos.length) {
-      contagem.textContent = 'todos atendidos ✓';
-      contagem.className   = 'agendados-count todos-ok';
-    } else {
-      contagem.textContent = '';
-      contagem.className   = 'agendados-count';
-    }
-  }
-
-  if (!lista.length) {
-    listaContainer.innerHTML = `<div class="agendados-vazio">Nenhum agendamento para hoje</div>`;
-    return;
-  }
-
-  listaContainer.innerHTML = lista.map(a => {
-    const horarios = [];
-    if (a.horaPedido) horarios.push(`🕐 ${a.horaPedido}`);
-    if (a.horaEnvio)  horarios.push(`🚀 ${a.horaEnvio}`);
-    const horariosHtml = horarios.length
-      ? `<span class="agendado-horarios">${horarios.join(' · ')}</span>`
-      : '';
-    return `
-    <div class="agendado-card ${a.concluido ? 'concluido' : ''}" id="agendado-${a.id}">
-      <div class="agendado-info">
-        <span class="agendado-cliente">${a.cliente}</span>
-        ${horariosHtml}
-        ${a.obs ? `<span class="agendado-obs">${a.obs}</span>` : ''}
-      </div>
-      <div class="agendado-acoes">
-        ${!a.concluido
-          ? `<button class="agendado-btn-abrir" onclick="abrirComandaAgendada(${a.id}, '${escaparAttr(a.cliente)}')">abrir comanda →</button>`
-          : `<span class="agendado-tag-concluido">✓ concluído</span>`
-        }
-      </div>
-    </div>
-  `;
-  }).join('');
-}
-
-function escaparAttr(str) {
-  return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-}
-
-function abrirComandaAgendada(id, cliente) {
-  document.getElementById('nome-cliente').value = cliente;
-  window._agendamentoAtivoId = id;
-  document.querySelector('.card').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  setTimeout(() => document.getElementById('nome-cliente').focus(), 400);
-  showToast(`Comanda aberta para ${cliente}`);
 }
 
 // ── AUTOCOMPLETE ──
@@ -143,11 +119,17 @@ function buildAutocomplete(input, lista) {
     matches.forEach(item => {
       const li = document.createElement('li');
       li.className = 'autocomplete-item';
-      li.textContent = item.nome;
+      li.textContent = item.nome + (item.preco > 0 ? ` — R$ ${item.preco.toFixed(2).replace('.', ',')}` : '');
       li.addEventListener('mousedown', e => {
         e.preventDefault();
         input.value = item.nome;
         dropdown.style.display = 'none';
+        // Preenche o campo de valor do item
+        const precoInput = input.closest('.item-card')?.querySelector('.item-preco-input');
+        if (precoInput && item.preco > 0) {
+          precoInput.value = item.preco.toFixed(2).replace('.', ',');
+        }
+        recalcularTotal();
       });
       dropdown.appendChild(li);
     });
@@ -161,6 +143,91 @@ function buildAutocomplete(input, lista) {
 
 // ── ITENS ──
 
+function qtyControlHtml() {
+  return `
+    <div class="qty-control">
+      <span class="qty-label">Quantidade</span>
+      <button class="qty-btn" onclick="alterarQty(this, -1)">−</button>
+      <span class="qty-display">1</span>
+      <input type="hidden" class="qty-input" value="1">
+      <button class="qty-btn" onclick="alterarQty(this, +1)">+</button>
+    </div>`;
+}
+
+function precoItemHtml() {
+  return `
+    <div class="item-preco-row">
+      <label>Valor (R$)</label>
+      <input type="text" class="item-preco-input" placeholder="0,00" oninput="formatarValor(this); recalcularTotal()">
+    </div>`;
+}
+
+function alterarQty(btn, delta) {
+  const card    = btn.closest('.item-card');
+  const hidden  = card.querySelector('.qty-input');
+  const display = card.querySelector('.qty-display');
+  let   val     = parseInt(hidden.value, 10) + delta;
+  if (val < 1) val = 1;
+  hidden.value        = val;
+  display.textContent = val;
+  recalcularTotal();
+}
+
+function recalcularTotal() {
+  let soma = 0;
+  document.querySelectorAll('#pratos-list .item-card, #bebidas-list .item-card').forEach(el => {
+    const precoStr = el.querySelector('.item-preco-input')?.value?.replace(',', '.') || '0';
+    const preco    = parseFloat(precoStr) || 0;
+    const qty      = parseInt(el.querySelector('.qty-input')?.value || '1', 10);
+    soma += preco * qty;
+  });
+  const freteVal = parseFloat(document.getElementById('frete-valor')?.value?.replace(',', '.') || '0') || 0;
+  soma += freteVal;
+  document.getElementById('valor-total').value = soma > 0 ? soma.toFixed(2).replace('.', ',') : '';
+}
+
+// ── FRETE AUTOCOMPLETE ──
+
+function buildFreteAutocomplete() {
+  const input    = document.getElementById('frete-bairro');
+  const wrapper  = document.getElementById('frete-ac-wrapper');
+
+  const dropdown = document.createElement('ul');
+  dropdown.className = 'autocomplete-list';
+  wrapper.appendChild(dropdown);
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    dropdown.innerHTML = '';
+    if (!q) { dropdown.style.display = 'none'; return; }
+
+    const matches = frete.bairros
+      .filter(b => b.bairro.toLowerCase().includes(q))
+      .slice(0, 6);
+
+    if (!matches.length) { dropdown.style.display = 'none'; return; }
+
+    matches.forEach(b => {
+      const li = document.createElement('li');
+      li.className = 'autocomplete-item';
+      li.textContent = b.bairro + ` — R$ ${b.preco.toFixed(2).replace('.', ',')}`;
+      li.addEventListener('mousedown', e => {
+        e.preventDefault();
+        input.value = b.bairro;
+        document.getElementById('frete-valor').value = b.preco.toFixed(2).replace('.', ',');
+        dropdown.style.display = 'none';
+        recalcularTotal();
+      });
+      dropdown.appendChild(li);
+    });
+    dropdown.style.display = 'block';
+  });
+
+  input.addEventListener('blur', () => {
+    setTimeout(() => { dropdown.style.display = 'none'; }, 150);
+  });
+}
+
 function addItem(tipo) {
   if (tipo === 'prato') {
     pratoCount++;
@@ -169,14 +236,16 @@ function addItem(tipo) {
     el.className = 'item-card';
     el.id = `prato-${n}`;
     el.innerHTML = `
-      <div class="item-num">Prato #${n}</div>
+      <span class="item-num">Prato #${n}</span>
       <button class="remove-btn" onclick="removeItem('prato-${n}')">✕ remover</button>
+      ${qtyControlHtml()}
       <div style="margin-bottom:8px">
         <label>Prato</label>
         <div class="ac-wrapper">
           <input type="text" class="prato-input" placeholder="Ex: Frango ao molho...">
         </div>
       </div>
+      ${precoItemHtml()}
       <div class="obs-group">
         <label>Observação</label>
         <textarea placeholder="Ex: Sem cebola, molho à parte..."></textarea>
@@ -191,14 +260,16 @@ function addItem(tipo) {
     el.className = 'item-card';
     el.id = `bebida-${n}`;
     el.innerHTML = `
-      <div class="item-num">Bebida #${n}</div>
+      <span class="item-num">Bebida #${n}</span>
       <button class="remove-btn" onclick="removeItem('bebida-${n}')">✕ remover</button>
+      ${qtyControlHtml()}
       <div class="bebida-group">
         <label>Bebida</label>
         <div class="ac-wrapper">
           <input type="text" class="bebida-input" placeholder="Ex: Coca-Cola 2L gelada">
         </div>
       </div>
+      ${precoItemHtml()}
     `;
     document.getElementById('bebidas-list').appendChild(el);
     buildAutocomplete(el.querySelector('.bebida-input'), cardapio.bebidas);
@@ -212,7 +283,7 @@ function removeItem(id) {
   el.style.transition = 'opacity .15s, transform .15s';
   el.style.opacity    = '0';
   el.style.transform  = 'translateX(-10px)';
-  setTimeout(() => { el.remove(); renumber(); }, 160);
+  setTimeout(() => { el.remove(); renumber(); recalcularTotal(); }, 160);
 }
 
 function renumber() {
@@ -256,15 +327,22 @@ function coletarDados() {
   }
 
   const pratos = [...document.querySelectorAll('#pratos-list .item-card')].map(el => ({
-    nome: el.querySelector('.prato-input')?.value.trim() || '',
-    obs:  el.querySelector('textarea')?.value.trim()    || ''
+    nome:       el.querySelector('.prato-input')?.value.trim() || '',
+    obs:        el.querySelector('textarea')?.value.trim()    || '',
+    quantidade: parseInt(el.querySelector('.qty-input')?.value || '1', 10),
+    preco:      parseFloat(el.querySelector('.item-preco-input')?.value?.replace(',', '.') || '0') || 0
   })).filter(p => p.nome);
 
   const bebidas = [...document.querySelectorAll('#bebidas-list .item-card')].map(el => ({
-    nome: el.querySelector('.bebida-input')?.value.trim() || ''
+    nome:       el.querySelector('.bebida-input')?.value.trim() || '',
+    quantidade: parseInt(el.querySelector('.qty-input')?.value || '1', 10),
+    preco:      parseFloat(el.querySelector('.item-preco-input')?.value?.replace(',', '.') || '0') || 0
   })).filter(b => b.nome);
 
-  return { num, nome, valor, forma, troco, pratos, bebidas };
+  const freteBairro = document.getElementById('frete-bairro')?.value.trim() || '';
+  const freteValor  = document.getElementById('frete-valor')?.value.trim() || '';
+
+  return { num, nome, valor, forma, troco, pratos, bebidas, freteBairro, freteValor };
 }
 
 // ── TELA DE REVISÃO ──
@@ -272,24 +350,40 @@ function coletarDados() {
 function abrirRevisao() {
   const num  = document.getElementById('num-comanda').value.trim();
   const nome = document.getElementById('nome-cliente').value.trim();
-  if (!num || !nome)                    { showToast('Preencha o número e o nome!'); return; }
+  if (!num || !nome) { showToast('Preencha o número e o nome!'); return; }
 
   const dados = coletarDados();
   if (!dados.pratos.length && !dados.bebidas.length) { showToast('Adicione ao menos um item!'); return; }
-  if (!dados.valor)                     { showToast('Informe o valor total!'); return; }
-  if (!dados.forma)                     { showToast('Selecione a forma de pagamento!'); return; }
+  if (!dados.valor) { showToast('Informe o valor total!'); return; }
+  if (!dados.forma) { showToast('Selecione a forma de pagamento!'); return; }
 
   const now = new Date();
   const timestamp = `Emitido: ${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
 
-  const pratosHtml = dados.pratos.map(p => `
+  const pratosHtml = dados.pratos.map(p => {
+    const precoStr = p.preco > 0 ? `<span class="prev-item-preco">R$ ${(p.preco * p.quantidade).toFixed(2).replace('.', ',')}</span>` : '';
+    return `
     <div class="prev-item">
-      <div class="prev-item-nome">${p.nome}</div>
+      <div class="prev-item-linha">
+        <span class="prev-qty">×${p.quantidade}</span>
+        <span class="prev-item-nome">${p.nome}</span>
+        ${precoStr}
+      </div>
       ${p.obs ? `<div class="prev-item-obs">${p.obs}</div>` : ''}
-    </div>`).join('');
+    </div>`;
+  }).join('');
 
-  const bebidasHtml = dados.bebidas.map(b => `
-    <div class="prev-item"><div class="prev-item-nome">${b.nome}</div></div>`).join('');
+  const bebidasHtml = dados.bebidas.map(b => {
+    const precoStr = b.preco > 0 ? `<span class="prev-item-preco">R$ ${(b.preco * b.quantidade).toFixed(2).replace('.', ',')}</span>` : '';
+    return `
+    <div class="prev-item">
+      <div class="prev-item-linha">
+        <span class="prev-qty">×${b.quantidade}</span>
+        <span class="prev-item-nome">${b.nome}</span>
+        ${precoStr}
+      </div>
+    </div>`;
+  }).join('');
 
   const trocoHtml = dados.troco
     ? `<div class="prev-field"><div class="prev-label">Troco para (R$)</div><div class="prev-value">${dados.troco}</div></div>`
@@ -302,10 +396,17 @@ function abrirRevisao() {
       <div class="prev-field"><div class="prev-label">Nº da Comanda</div><div class="prev-value">#${dados.num}</div></div>
       <div class="prev-field"><div class="prev-label">Nome do Cliente</div><div class="prev-value">${dados.nome}</div></div>
     </div>
-    ${pratosHtml  ? `<hr class="prev-divider"><div class="prev-section-title">Pratos</div>${pratosHtml}`   : ''}
-    ${bebidasHtml ? `<hr class="prev-divider"><div class="prev-section-title">Bebidas</div>${bebidasHtml}` : ''}
+    ${pratosHtml  ? `<hr class="prev-divider"><div class="prev-section-title">🍽 Pratos</div>${pratosHtml}`   : ''}
+    ${bebidasHtml ? `<hr class="prev-divider"><div class="prev-section-title">🥤 Bebidas</div>${bebidasHtml}` : ''}
     <hr class="prev-divider">
-    <div class="prev-section-title">Pagamento</div>
+    <div class="prev-section-title">💰 Pagamento</div>
+    ${dados.freteBairro || dados.freteValor ? `
+    <div class="prev-item" style="border-left-color: var(--green); margin-bottom: 10px;">
+      <div class="prev-item-linha">
+        <span class="prev-item-nome">🚚 Frete${dados.freteBairro ? ` — ${dados.freteBairro}` : ''}</span>
+        ${dados.freteValor ? `<span class="prev-item-preco">R$ ${dados.freteValor}</span>` : ''}
+      </div>
+    </div>` : ''}
     <div class="prev-pagamento">
       <div class="prev-field"><div class="prev-label">Valor Total</div><div class="prev-value">R$ ${dados.valor}</div></div>
       <div class="prev-field"><div class="prev-label">Forma</div><div class="prev-value">${dados.forma}</div></div>
@@ -324,148 +425,24 @@ function fecharRevisao() {
 
 // ── CONFIRMAR IMPRESSÃO ──
 
-function confirmarImpressao() {
+async function confirmarImpressao() {
   const dados = coletarDados();
 
-  salvarNoHistorico(dados);
+  await salvarNoHistorico(dados); // grava no .json via IPC
 
-  // Se esta comanda veio de um agendamento, marca como concluído
-  if (window._agendamentoAtivoId) {
-    marcarAgendamentoConcluido(window._agendamentoAtivoId); // utils.js
-    window._agendamentoAtivoId = null;
-    renderAgendadosDia();
-  }
-
-  // Captura o HTML do preview de revisão (já está gerado e perfeito)
-  const previewHtml = document.getElementById('revisao-preview').innerHTML;
-
-  // Abre janela de impressão isolada com apenas o conteúdo do preview
-  const janela = window.open('', '_blank', 'width=420,height=600');
-  janela.document.write(`<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <title>Comanda</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <style>
-    @page { size: 80mm auto; margin: 6mm 4mm; }
-    * { box-sizing: border-box; margin: 0; padding: 0; color: #000 !important; background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    body {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.82rem;
-      line-height: 1.55;
-      padding: 12px 14px;
-    }
-    .prev-logo {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 2rem;
-      letter-spacing: 0.08em;
-      text-align: center;
-      line-height: 1;
-    }
-    .prev-tagline {
-      font-size: 0.58rem;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      text-align: center;
-      margin-top: 3px;
-      margin-bottom: 12px;
-      padding-bottom: 12px;
-      border-bottom: 2px solid #000;
-    }
-    .prev-row {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 10px;
-      flex-wrap: wrap;
-    }
-    .prev-field { flex: 1; }
-    .prev-label {
-      font-size: 0.54rem;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      margin-bottom: 2px;
-    }
-    .prev-value {
-      font-size: 0.88rem;
-      font-weight: 700;
-      border-bottom: 1px dashed #999;
-      padding-bottom: 2px;
-    }
-    .prev-divider {
-      border: none;
-      border-top: 1px dashed #999;
-      margin: 10px 0;
-    }
-    .prev-section-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 0.95rem;
-      letter-spacing: 0.1em;
-      margin-bottom: 6px;
-    }
-    .prev-item {
-      border-left: 3px solid #000;
-      padding: 5px 9px;
-      margin-bottom: 5px;
-    }
-    .prev-item-nome { font-size: 0.82rem; }
-    .prev-item-obs {
-      font-size: 0.72rem;
-      font-style: italic;
-      margin-top: 2px;
-      padding-left: 7px;
-      border-left: 2px solid #999;
-    }
-    .prev-pagamento { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
-    .prev-timestamp {
-      font-size: 0.58rem;
-      text-align: right;
-      margin-top: 12px;
-      letter-spacing: 0.12em;
-    }
-  </style>
-</head>
-<body>
-  ${previewHtml}
-</body>
-</html>`);
-
-  janela.document.close();
-
-  // Aguarda fontes carregarem antes de imprimir
-  janela.onload = () => {
-    janela.focus();
-    janela.print();
-    janela.addEventListener('afterprint', () => janela.close(), { once: true });
-  };
+  // Marca agendamento como concluído, se houver
+  const params  = new URLSearchParams(window.location.search);
+  const agendId = parseInt(params.get('agendId'));
+  if (agendId) concluirAgendamento(agendId); // utils.js
 
   fecharRevisao();
-  limparSemConfirmar();
+  window.addEventListener('afterprint', () => window.location.reload(), { once: true });
+  window.print();
 }
 
-// Limpa a comanda silenciosamente após imprimir (sem confirm)
-function limparSemConfirmar() {
-  document.getElementById('nome-cliente').value    = '';
-  document.getElementById('pratos-list').innerHTML  = '';
-  document.getElementById('bebidas-list').innerHTML = '';
-  document.getElementById('valor-total').value   = '';
-  document.getElementById('troco-para').value    = '';
-  document.getElementById('outro-desc').value    = '';
-  document.getElementById('forma-pagamento').value = '';
-  document.querySelectorAll('.pay-btn').forEach(b => b.classList.remove('selected'));
-  document.getElementById('troco-group').classList.remove('visible');
-  document.getElementById('outro-group').classList.remove('visible');
-  pratoCount  = 0;
-  bebidaCount = 0;
-  window._agendamentoAtivoId = null;
-  iniciarNumComanda();
-  addItem('prato');
-  addItem('bebida');
-}
+// ── SALVAR NO HISTÓRICO ──
 
-// ── HISTÓRICO ──
-
-function salvarNoHistorico(dados) {
+async function salvarNoHistorico(dados) {
   const pedido = {
     id:      Date.now(),
     hora:    new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
@@ -478,21 +455,20 @@ function salvarNoHistorico(dados) {
     troco:   dados.troco
   };
 
-  const chave    = chaveHoje();           // utils.js
-  const historico = JSON.parse(localStorage.getItem(chave) || '[]');
-  historico.push(pedido);
-  localStorage.setItem(chave, JSON.stringify(historico));
-
-  salvarUltimaComanda(dados.num);         // utils.js
+  const hoje = dataHoje(); // utils.js
+  await salvarPedidoHistorico(hoje, pedido); // utils.js → window.api.salvarPedido
+  await salvarUltimaComanda(dados.num);      // utils.js → window.api.salvarConfig
 }
 
 // ── LIMPAR ──
 
 function limpar() {
   if (!confirm('Limpar toda a comanda?')) return;
-  document.getElementById('nome-cliente').value = '';
+  document.getElementById('nome-cliente').value    = '';
   document.getElementById('pratos-list').innerHTML  = '';
   document.getElementById('bebidas-list').innerHTML = '';
+  document.getElementById('frete-bairro').value = '';
+  document.getElementById('frete-valor').value  = '';
   document.getElementById('valor-total').value  = '';
   document.getElementById('troco-para').value   = '';
   document.getElementById('outro-desc').value   = '';
@@ -502,48 +478,87 @@ function limpar() {
   document.getElementById('outro-group').classList.remove('visible');
   pratoCount  = 0;
   bebidaCount = 0;
-  window._agendamentoAtivoId = null;
   iniciarNumComanda();
   addItem('prato');
   addItem('bebida');
   showToast('Comanda limpa!');
 }
 
-// ── COMANDA ──
+// ── NÚMERO DE COMANDA ──
 
-function iniciarNumComanda() {
-  document.getElementById('num-comanda').value = proximoNumComanda();  // utils.js
-  atualizarHintUltimaComanda();                                        // utils.js
+async function iniciarNumComanda() {
+  const num = await proximoNumComanda(); // utils.js
+  document.getElementById('num-comanda').value = num;
+  await atualizarHintUltimaComanda();    // utils.js
 }
 
 // ── INIT ──
 
-carregarCardapioBase().then(c => {  // utils.js
-  cardapio = c;
+// ── AGENDADOS HOJE ──
+
+function renderAgendadosHoje() {
+  const todos = carregarAgendamentos(); // utils.js
+  const hoje  = dataHoje();
+  const agendados = todos.filter(a => a.data === hoje && !a.concluido);
+
+  const count   = document.getElementById('agendados-count');
+  const lista   = document.getElementById('agendados-lista');
+  const painel  = document.getElementById('agendados-painel');
+
+  if (count) count.textContent = agendados.length ? `${agendados.length}` : '';
+
+  if (!agendados.length) {
+    if (painel) painel.style.display = 'none';
+    return;
+  }
+
+  if (painel) painel.style.display = '';
+
+  if (lista) {
+    lista.innerHTML = agendados.map(a => {
+      const horarios = [];
+      if (a.horaPedido) horarios.push(`🕐 ${a.horaPedido}`);
+      if (a.horaEnvio)  horarios.push(`🚀 ${a.horaEnvio}`);
+      return `
+        <div class="agendado-card">
+          <div class="agendado-info">
+            <span class="agendado-cliente">${a.cliente}</span>
+            ${horarios.length ? `<span class="agendado-horarios">${horarios.join('  ·  ')}</span>` : ''}
+            ${a.obs ? `<span class="agendado-obs">${a.obs}</span>` : ''}
+          </div>
+          <div class="agendado-acoes">
+            <a class="agendado-btn-abrir" href="./index.html?cliente=${encodeURIComponent(a.cliente)}&agendId=${a.id}">abrir →</a>
+          </div>
+        </div>`;
+    }).join('');
+  }
+}
+
+// ── INIT ──
+
+async function init() {
+  cardapio = await carregarCardapioBase(); // utils.js
+  frete    = await window.api.lerFrete();
+  buildFreteAutocomplete();
 
   document.querySelectorAll('.dia-btn').forEach(btn => {
     btn.addEventListener('click', () => setDia(btn.dataset.dia));
   });
   setDia(diaAtivo);
 
-  iniciarNumComanda();
-  addItem('prato');
-  addItem('bebida');
+  await iniciarNumComanda();
 
-  // Renderiza agendados do dia
-  renderAgendadosDia();
+  renderAgendadosHoje();
 
-  // Se vier da página de agendamentos com cliente pré-definido via URL
-  const params = new URLSearchParams(window.location.search);
-  const clienteParam = params.get('cliente');
-  const agendIdParam = params.get('agendId');
-  if (clienteParam) {
-    document.getElementById('nome-cliente').value = decodeURIComponent(clienteParam);
-    if (agendIdParam) window._agendamentoAtivoId = parseInt(agendIdParam, 10);
+  // Pré-preenche cliente vindo de um agendamento
+  const params  = new URLSearchParams(window.location.search);
+  const cliente = params.get('cliente');
+  if (cliente) {
+    document.getElementById('nome-cliente').value = cliente;
   }
 
-  // Exibe a página com fade-in suave (evita flash de layout)
-  requestAnimationFrame(() => {
-    document.body.classList.add('pronto');
-  });
-});
+  document.body.classList.add('pronto');
+}
+
+init();
+

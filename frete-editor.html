@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frete — Bar do Júlio</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./style/base.css">
+<link rel="stylesheet" href="./style/frete.css">
+</head>
+<body>
+
+<div class="top-bar">
+  <a class="back-link" href="./index.html">← Voltar</a>
+  <div class="top-center">
+    <span class="top-logo">Bar do Júlio</span>
+    <span class="top-sub">Tabela de Frete</span>
+  </div>
+  <div class="top-right"></div>
+</div>
+
+<div class="page narrow">
+
+  <div class="info-banner">
+    <span class="info-icon">ℹ</span>
+    <span>Cadastre os bairros e seus valores de frete. As alterações são salvas automaticamente.</span>
+  </div>
+
+  <!-- ── FORMULÁRIO ── -->
+  <section class="frete-section">
+    <div class="frete-section-title">+ Novo bairro</div>
+    <div class="frete-form">
+      <div class="frete-field">
+        <label>Bairro</label>
+        <input type="text" id="novo-bairro" placeholder="Ex: Centro, Jardim América...">
+      </div>
+      <div class="frete-field narrow">
+        <label>Frete (R$)</label>
+        <input type="number" id="novo-preco" min="0" step="0.01" placeholder="0,00">
+      </div>
+      <button class="btn-add-frete" onclick="adicionarBairro()">Adicionar</button>
+    </div>
+  </section>
+
+  <!-- ── LISTA ── -->
+  <section class="frete-section">
+    <div class="frete-lista-header">
+      <span class="frete-section-title">Bairros Cadastrados</span>
+      <span class="frete-count" id="frete-count"></span>
+    </div>
+
+    <div id="frete-lista">
+      <!-- preenchido via JS -->
+    </div>
+
+    <div id="frete-vazio" class="frete-vazio" style="display:none">
+      Nenhum bairro cadastrado ainda.
+    </div>
+  </section>
+
+</div>
+
+<!-- Modal de edição -->
+<div id="modal-overlay" class="modal-overlay" style="display:none" onclick="fecharModal(event)">
+  <div class="modal">
+    <div class="modal-title">Editar bairro</div>
+    <input type="hidden" id="edit-id">
+    <div class="form-field">
+      <label>Bairro</label>
+      <input type="text" id="edit-bairro">
+    </div>
+    <div class="form-field">
+      <label>Frete (R$)</label>
+      <input type="number" id="edit-preco" min="0" step="0.01">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="fecharModal()">Cancelar</button>
+      <button class="btn-modal-save" onclick="salvarEdicao()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="./script/utils.js"></script>
+<script src="./script/frete.js"></script>
+</body>
+</html>

@@ -1,9 +1,12 @@
 /* ═══════════════════════════════════════
    UTILS.JS — Bar do Júlio
    Compartilhado por todas as páginas
+
+   No Electron: usa window.api (IPC → Node.js → arquivos .json)
    ═══════════════════════════════════════ */
 
 // ── TOAST ──
+
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -12,17 +15,13 @@ function showToast(msg) {
 }
 
 // ── DATAS ──
+
 function dataHoje() {
   return new Date().toISOString().slice(0, 10);
 }
-function chaveHoje() {
-  return `historico_${dataHoje()}`;
-}
-function chaveData(data) {
-  return `historico_${data}`;
-}
 
 // ── MOEDA ──
+
 function formatarValor(input) {
   let val = input.value.replace(/\D/g, '');
   if (!val) { input.value = ''; return; }
@@ -31,105 +30,150 @@ function formatarValor(input) {
 }
 
 // ── DIAS DA SEMANA ──
+
 const DIAS = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
+
 const DIAS_LABEL_CURTO = {
   domingo: 'DOM', segunda: 'SEG', terca: 'TER',
   quarta: 'QUA', quinta: 'QUI', sexta: 'SEX', sabado: 'SÁB'
 };
+
 const DIAS_LABEL_LONGO = {
   domingo: 'Domingo', segunda: 'Segunda-feira', terca: 'Terça-feira',
   quarta: 'Quarta-feira', quinta: 'Quinta-feira', sexta: 'Sexta-feira', sabado: 'Sábado'
 };
+
 function diaAtualSistema() {
   return DIAS[new Date().getDay()];
 }
 
-// Formata 'YYYY-MM-DD' → 'DD/MM/YYYY'
-function formatarDataBR(dataISO) {
-  if (!dataISO) return '';
-  const [y, m, d] = dataISO.split('-');
-  return `${d}/${m}/${y}`;
+// ── CARDÁPIO ──
+// Cardápio padrão embutido — usado quando data/cardapio.json ainda não existe.
+// Após qualquer edição no Editor, o arquivo JSON passa a ser a fonte de verdade.
+
+const CARDAPIO_PADRAO = {
+  pratos: [
+    { id: 1, nome: "Frango ao molho com arroz e feijão",      preco: 0, disponibilidade: ["segunda","terca","quarta","quinta","sexta","sabado","domingo"] },
+    { id: 2, nome: "Picanha na brasa com fritas",              preco: 0, disponibilidade: ["sexta","sabado","domingo"] },
+    { id: 3, nome: "Filé de tilápia grelhado com salada",      preco: 0, disponibilidade: ["segunda","quarta","sexta"] },
+    { id: 4, nome: "Feijoada completa",                        preco: 0, disponibilidade: ["sabado"] },
+    { id: 5, nome: "Parmegiana de frango com arroz",           preco: 0, disponibilidade: ["segunda","terca","quarta","quinta","sexta"] },
+    { id: 6, nome: "Costela assada com mandioca",              preco: 0, disponibilidade: ["domingo"] },
+    { id: 7, nome: "Misto quente",                             preco: 0, disponibilidade: ["segunda","terca","quarta","quinta","sexta","sabado","domingo"] },
+    { id: 8, nome: "Pastel de carne com caldo de cana",        preco: 0, disponibilidade: ["quarta","sabado"] }
+  ],
+  bebidas: [
+    { id: 1,  nome: "Coca-Cola 2L",                            preco: 0, disponibilidade: ["segunda","terca","quarta","quinta","sexta","sabado","domingo"] },
+    { id: 2,  nome: "Coca-Cola lata 350ml",                    preco: 0, disponibilidade: ["segunda","terca","quarta","quinta","sexta","sabado","domingo"] },
+    { id: 3,  nome: "Guaraná Antarctica 2L",                   preco: 0, disponibilidade: ["segunda","terca","quarta","quinta","sexta","sabado","domingo"] },
+    { id: 4,  nome: "Guaraná Antarctica lata 350ml",           preco: 0, disponibilidade: ["segunda","terca","quarta","quinta","sexta","sabado","domingo"] },
+    { id: 5,  nome: "Água mineral 500ml sem gás",              preco: 0, disponibilidade: ["segunda","terca","quarta","quinta","sexta","sabado","domingo"] },
+    { id: 6,  nome: "Água mineral 500ml com gás",              preco: 0, disponibilidade: ["segunda","terca","quarta","quinta","sexta","sabado","domingo"] },
+    { id: 7,  nome: "Suco de laranja natural 500ml",           preco: 0, disponibilidade: ["segunda","terca","quarta","quinta","sexta"] },
+    { id: 8,  nome: "Cerveja Heineken 600ml",                  preco: 0, disponibilidade: ["quinta","sexta","sabado","domingo"] },
+    { id: 9,  nome: "Cerveja Skol lata 350ml",                 preco: 0, disponibilidade: ["segunda","terca","quarta","quinta","sexta","sabado","domingo"] },
+    { id: 10, nome: "Cerveja Brahma lata 350ml",               preco: 0, disponibilidade: ["segunda","terca","quarta","quinta","sexta","sabado","domingo"] },
+    { id: 11, nome: "Caipirinha de limão",                     preco: 0, disponibilidade: ["quinta","sexta","sabado","domingo"] },
+    { id: 12, nome: "Suco de maracujá 400ml",                  preco: 0, disponibilidade: ["segunda","terca","quarta","quinta","sexta"] }
+  ]
+};
+
+// Carrega cardápio: tenta o arquivo JSON salvo, cai no padrão se não existir
+async function carregarCardapioBase() {
+  const salvo = await window.api.lerCardapio();
+  if (salvo) return salvo;
+  return JSON.parse(JSON.stringify(CARDAPIO_PADRAO)); // deep copy do padrão
 }
 
-// ── CARDÁPIO (localStorage com fallback para JSON) ──
-const CHAVE_CARDAPIO = 'cardapio_editado';
-async function carregarCardapioBase() {
-  const salvo = localStorage.getItem(CHAVE_CARDAPIO);
-  if (salvo) {
-    try { return JSON.parse(salvo); } catch (e) {}
-  }
-  try {
-    const res = await fetch('./cardapio.json');
-    return await res.json();
-  } catch (e) {
-    console.warn('Não foi possível carregar cardapio.json:', e);
-    return { pratos: [], bebidas: [] };
-  }
+// Salva cardápio no arquivo JSON via IPC
+async function salvarCardapioLocal(cardapio) {
+  await window.api.salvarCardapio(cardapio);
 }
-function salvarCardapioLocal(cardapio) {
-  localStorage.setItem(CHAVE_CARDAPIO, JSON.stringify(cardapio));
+
+// ── HISTÓRICO ──
+
+// Retorna pedidos de um dia (YYYY-MM-DD)
+async function lerHistorico(data) {
+  return await window.api.lerHistorico(data);
+}
+
+// Adiciona um pedido ao histórico do dia
+async function salvarPedidoHistorico(data, pedido) {
+  await window.api.salvarPedido(data, pedido);
+}
+
+// Apaga todos os pedidos de um dia
+async function limparHistoricoDia(data) {
+  await window.api.limparHistorico(data);
 }
 
 // ── NÚMERO DE COMANDA ──
-const CHAVE_ULTIMA_COMANDA = 'ultima_comanda';
-function proximoNumComanda() {
-  const ultimo = parseInt(localStorage.getItem(CHAVE_ULTIMA_COMANDA) || '0', 10);
-  return ultimo + 1;
+// Lido e escrito em data/config.json via IPC
+
+async function proximoNumComanda() {
+  const config = await window.api.lerConfig();
+  return (parseInt(config.ultima_comanda || '0', 10)) + 1;
 }
-function salvarUltimaComanda(num) {
-  localStorage.setItem(CHAVE_ULTIMA_COMANDA, num);
+
+async function salvarUltimaComanda(num) {
+  await window.api.salvarConfig('ultima_comanda', num);
 }
-function atualizarHintUltimaComanda() {
-  const ultimo = localStorage.getItem(CHAVE_ULTIMA_COMANDA);
-  const hint = document.getElementById('hint-ultima-comanda');
-  if (hint) hint.textContent = ultimo ? `última: #${ultimo}` : '';
+
+async function atualizarHintUltimaComanda() {
+  const config = await window.api.lerConfig();
+  const hint   = document.getElementById('hint-ultima-comanda');
+  if (hint) hint.textContent = config.ultima_comanda ? `última: #${config.ultima_comanda}` : '';
 }
 
 // ── AGENDAMENTOS ──
-const CHAVE_AGENDAMENTOS = 'agendamentos_v1';
+// Salvos em localStorage — acesso imediato, sem IPC
+
+const AGEND_KEY = 'agendamentos_bar_julio';
 
 function carregarAgendamentos() {
   try {
-    return JSON.parse(localStorage.getItem(CHAVE_AGENDAMENTOS) || '[]');
-  } catch (e) { return []; }
+    return JSON.parse(localStorage.getItem(AGEND_KEY) || '[]');
+  } catch (e) {
+    return [];
+  }
 }
 
-function salvarAgendamentos(lista) {
-  localStorage.setItem(CHAVE_AGENDAMENTOS, JSON.stringify(lista));
-}
-
-function agendamentosParaData(dataISO) {
-  return carregarAgendamentos().filter(a => a.data === dataISO);
-}
-
-function agendamentosHoje() {
-  return agendamentosParaData(dataHoje());
-}
-
-function marcarAgendamentoConcluido(id) {
-  const lista = carregarAgendamentos();
-  const idx   = lista.findIndex(a => a.id === id);
-  if (idx === -1) return;
-  lista[idx].concluido = true;
-  salvarAgendamentos(lista);
-}
-
-function deletarAgendamento(id) {
-  const lista = carregarAgendamentos().filter(a => a.id !== id);
-  salvarAgendamentos(lista);
+function _salvarAgendamentos(lista) {
+  localStorage.setItem(AGEND_KEY, JSON.stringify(lista));
 }
 
 function criarAgendamento({ cliente, data, obs, horaPedido, horaEnvio }) {
   const lista = carregarAgendamentos();
   lista.push({
-    id:          Date.now(),
-    cliente:     cliente.trim(),
-    data:        data,                       // 'YYYY-MM-DD'
-    obs:         (obs || '').trim(),
-    horaPedido:  (horaPedido || '').trim(),  // 'HH:MM' ou ''
-    horaEnvio:   (horaEnvio  || '').trim(),  // 'HH:MM' ou ''
-    concluido:   false,
-    criadoEm:    new Date().toISOString()
+    id:         Date.now(),
+    cliente,
+    data,
+    obs,
+    horaPedido,
+    horaEnvio,
+    concluido:  false
   });
-  salvarAgendamentos(lista);
+  _salvarAgendamentos(lista);
+}
+
+function deletarAgendamento(id) {
+  const lista = carregarAgendamentos().filter(a => a.id !== id);
+  _salvarAgendamentos(lista);
+}
+
+function concluirAgendamento(id) {
+  const lista = carregarAgendamentos().map(a =>
+    a.id === id ? { ...a, concluido: true } : a
+  );
+  _salvarAgendamentos(lista);
+}
+
+// ── FORMATOS DE DATA ──
+
+function formatarDataBR(dataISO) {
+  // "YYYY-MM-DD" → "DD/MM/AAAA (dia-semana)"
+  const [ano, mes, dia] = dataISO.split('-');
+  const d = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
+  const diaSemana = DIAS_LABEL_LONGO[DIAS[d.getDay()]];
+  return `${dia}/${mes}/${ano} (${diaSemana})`;
 }

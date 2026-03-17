@@ -1,0 +1,265 @@
+{
+  "pratos": [
+    {
+      "id": 1,
+      "nome": "Frango ao molho com arroz e feijão",
+      "preco": 35.9,
+      "disponibilidade": [
+        "segunda",
+        "terca",
+        "quarta",
+        "quinta",
+        "sexta",
+        "sabado",
+        "domingo"
+      ]
+    },
+    {
+      "id": 2,
+      "nome": "Picanha na brasa com fritas",
+      "preco": 65,
+      "disponibilidade": [
+        "sexta",
+        "sabado",
+        "domingo"
+      ]
+    },
+    {
+      "id": 3,
+      "nome": "Filé de tilápia grelhado com salada",
+      "preco": 25,
+      "disponibilidade": [
+        "segunda",
+        "quarta",
+        "sexta"
+      ]
+    },
+    {
+      "id": 4,
+      "nome": "Feijoada completa",
+      "preco": 39.99,
+      "disponibilidade": [
+        "sabado"
+      ]
+    },
+    {
+      "id": 5,
+      "nome": "Parmegiana de frango com arroz",
+      "preco": 42,
+      "disponibilidade": [
+        "segunda",
+        "terca",
+        "quarta",
+        "quinta",
+        "sexta"
+      ]
+    },
+    {
+      "id": 6,
+      "nome": "Costela assada com mandioca",
+      "preco": 50,
+      "disponibilidade": [
+        "domingo"
+      ]
+    },
+    {
+      "id": 7,
+      "nome": "Misto quente",
+      "preco": 8,
+      "disponibilidade": [
+        "segunda",
+        "terca",
+        "quarta",
+        "quinta",
+        "sexta",
+        "sabado",
+        "domingo"
+      ]
+    },
+    {
+      "id": 8,
+      "nome": "Pastel de carne com caldo de cana",
+      "preco": 15,
+      "disponibilidade": [
+        "quarta",
+        "sabado"
+      ]
+    },
+    {
+      "id": 9,
+      "nome": "atum com pum",
+      "preco": 50,
+      "disponibilidade": [
+        "segunda"
+      ]
+    }
+  ],
+  "bebidas": [
+    {
+      "id": 1,
+      "nome": "Coca-Cola 2L",
+      "preco": 8,
+      "disponibilidade": [
+        "segunda",
+        "terca",
+        "quarta",
+        "quinta",
+        "sexta",
+        "sabado",
+        "domingo"
+      ]
+    },
+    {
+      "id": 2,
+      "nome": "Coca-Cola lata 350ml",
+      "preco": 6,
+      "disponibilidade": [
+        "segunda",
+        "terca",
+        "quarta",
+        "quinta",
+        "sexta",
+        "sabado",
+        "domingo"
+      ]
+    },
+    {
+      "id": 3,
+      "nome": "Guaraná Antarctica 2L",
+      "preco": 7,
+      "disponibilidade": [
+        "segunda",
+        "terca",
+        "quarta",
+        "quinta",
+        "sexta",
+        "sabado",
+        "domingo"
+      ]
+    },
+    {
+      "id": 4,
+      "nome": "Guaraná Antarctica lata 350ml",
+      "preco": 0,
+      "disponibilidade": [
+        "segunda",
+        "terca",
+        "quarta",
+        "quinta",
+        "sexta",
+        "sabado",
+        "domingo"
+      ]
+    },
+    {
+      "id": 5,
+      "nome": "Água mineral 500ml sem gás",
+      "preco": 4,
+      "disponibilidade": [
+        "segunda",
+        "terca",
+        "quarta",
+        "quinta",
+        "sexta",
+        "sabado",
+        "domingo"
+      ]
+    },
+    {
+      "id": 6,
+      "nome": "Água mineral 500ml com gás",
+      "preco": 4.5,
+      "disponibilidade": [
+        "segunda",
+        "terca",
+        "quarta",
+        "quinta",
+        "sexta",
+        "sabado",
+        "domingo"
+      ]
+    },
+    {
+      "id": 7,
+      "nome": "Suco de laranja natural 500ml",
+      "preco": 15,
+      "disponibilidade": [
+        "segunda",
+        "terca",
+        "quarta",
+        "quinta",
+        "sexta"
+      ]
+    },
+    {
+      "id": 8,
+      "nome": "Cerveja Heineken 600ml",
+      "preco": 9,
+      "disponibilidade": [
+        "quinta",
+        "sexta",
+        "sabado",
+        "domingo"
+      ]
+    },
+    {
+      "id": 9,
+      "nome": "Cerveja Skol lata 350ml",
+      "preco": 7,
+      "disponibilidade": [
+        "segunda",
+        "terca",
+        "quarta",
+        "quinta",
+        "sexta",
+        "sabado",
+        "domingo"
+      ]
+    },
+    {
+      "id": 10,
+      "nome": "Cerveja Brahma lata 350ml",
+      "preco": 0,
+      "disponibilidade": [
+        "segunda",
+        "terca",
+        "quarta",
+        "quinta",
+        "sexta",
+        "sabado",
+        "domingo"
+      ]
+    },
+    {
+      "id": 11,
+      "nome": "Caipirinha de limão",
+      "preco": 15,
+      "disponibilidade": [
+        "quinta",
+        "sexta",
+        "sabado",
+        "domingo"
+      ]
+    },
+    {
+      "id": 12,
+      "nome": "Suco de maracujá 400ml",
+      "preco": 16,
+      "disponibilidade": [
+        "segunda",
+        "terca",
+        "quarta",
+        "quinta",
+        "sexta"
+      ]
+    },
+    {
+      "id": 13,
+      "nome": "suco de bacaxi 500ml",
+      "preco": 20,
+      "disponibilidade": [
+        "sexta"
+      ]
+    }
+  ]
+}

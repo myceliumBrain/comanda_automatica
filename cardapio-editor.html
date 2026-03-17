@@ -16,9 +16,7 @@
     <span class="top-logo">Bar do Júlio</span>
     <span class="top-sub">Editor de Cardápio</span>
   </div>
-  <div class="top-right">
-    <button class="btn-export" onclick="exportarJSON()">⬇ Exportar JSON</button>
-  </div>
+  <div class="top-right"></div>
 </div>
 
 <div class="page">
@@ -26,7 +24,7 @@
   <!-- Aviso sobre funcionamento -->
   <div class="info-banner">
     <span class="info-icon">ℹ</span>
-    <span>As alterações ficam salvas neste navegador. Use <strong>Exportar JSON</strong> para gerar o arquivo e substituir o <code>cardapio.json</code> do projeto.</span>
+    <span>As alterações são salvas automaticamente no arquivo <code>cardapio.json</code>.</span>
   </div>
 
   <div class="editor-grid">
@@ -46,6 +44,10 @@
         <div class="form-field">
           <label>Nome do prato</label>
           <input type="text" id="new-prato-nome" placeholder="Ex: Frango grelhado com legumes">
+        </div>
+        <div class="form-field narrow">
+          <label>Preço (R$) <span class="label-hint">(0 = sem preço)</span></label>
+          <input type="number" id="new-prato-preco" min="0" step="0.01" placeholder="0,00" value="">
         </div>
         <div class="form-field">
           <label>Disponibilidade <span class="label-hint">(selecione os dias)</span></label>
@@ -80,6 +82,10 @@
           <label>Nome da bebida</label>
           <input type="text" id="new-bebida-nome" placeholder="Ex: Suco de abacaxi 400ml">
         </div>
+        <div class="form-field narrow">
+          <label>Preço (R$) <span class="label-hint">(0 = sem preço)</span></label>
+          <input type="number" id="new-bebida-preco" min="0" step="0.01" placeholder="0,00" value="0">
+        </div>
         <div class="form-field">
           <label>Disponibilidade <span class="label-hint">(selecione os dias)</span></label>
           <div class="dias-check" id="dias-bebida">
@@ -109,6 +115,10 @@
     <div class="form-field">
       <label>Nome</label>
       <input type="text" id="edit-nome">
+    </div>
+    <div class="form-field narrow">
+      <label>Preço (R$)</label>
+      <input type="number" id="edit-preco" min="0" step="0.01" placeholder="0,00" value="0">
     </div>
     <div class="form-field">
       <label>Disponibilidade</label>

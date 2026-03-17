@@ -1,8 +1,9 @@
 /* historico.css — específico do histórico
    Depende de: base.css                     */
 
-/* ── BOTÃO LIMPAR DIA ── */
-.btn-limpar-hist {
+/* ── BOTÕES DO TOP-BAR ── */
+.btn-limpar-hist,
+.btn-imprimir-hist {
   background: none;
   border: 1px solid #5a3e20;
   color: var(--muted);
@@ -14,7 +15,8 @@
   cursor: pointer;
   transition: border-color .15s, color .15s;
 }
-.btn-limpar-hist:hover { border-color: var(--red); color: var(--red); }
+.btn-limpar-hist:hover   { border-color: var(--red);   color: var(--red); }
+.btn-imprimir-hist:hover { border-color: var(--amber); color: var(--amber); }
 
 /* ── RESUMO DO DIA ── */
 .resumo-bar {
@@ -105,6 +107,48 @@
 .pedido-item { font-size: 0.82rem; color: var(--ink); margin-bottom: 6px; line-height: 1.4; }
 .pedido-obs  { font-size: 0.72rem; color: var(--muted); font-style: italic; margin-top: 2px; padding-left: 10px; border-left: 2px solid var(--border); }
 .pedido-troco { font-size: 0.75rem; color: var(--muted); margin-top: 8px; }
+
+/* ── CANCELAR PEDIDO ── */
+.btn-cancelar {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: border-color .15s, color .15s, background .15s;
+  white-space: nowrap;
+}
+.btn-cancelar:hover        { border-color: var(--red); color: var(--red); }
+.btn-cancelar.descancelado { border-color: var(--green); color: var(--green); }
+.btn-cancelar.descancelado:hover { background: rgba(39,174,96,.1); }
+
+.tag-cancelado {
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--red);
+  border: 1px solid var(--red);
+  padding: 2px 6px;
+  white-space: nowrap;
+}
+
+.pedido-card.cancelado {
+  border-left-color: var(--red);
+  opacity: 0.65;
+}
+.pedido-card.cancelado .pedido-header { background: rgba(180,40,40,.04); }
+.pedido-card.cancelado .pedido-nome,
+.pedido-card.cancelado .pedido-valor  { text-decoration: line-through; opacity: 0.7; }
+
+.resumo-cancelados {
+  font-size: 0.75rem;
+  color: var(--red);
+  font-family: 'IBM Plex Mono', monospace;
+}
 
 /* ── EMPTY STATE ── */
 .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }

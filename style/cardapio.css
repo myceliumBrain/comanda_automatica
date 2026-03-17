@@ -73,7 +73,9 @@
 .item-row-body { flex: 1; padding: 10px 12px; cursor: pointer; }
 .item-row-body:hover .item-nome { color: var(--amber); }
 
-.item-nome { font-size: 0.82rem; color: var(--ink); font-weight: 700; transition: color .15s; margin-bottom: 5px; }
+.item-nome-preco { display: flex; align-items: baseline; gap: 10px; margin-bottom: 5px; flex-wrap: wrap; }
+.item-nome  { font-size: 0.82rem; color: var(--ink); font-weight: 700; transition: color .15s; }
+.item-preco { font-family: 'Bebas Neue', sans-serif; font-size: 0.95rem; color: var(--green); letter-spacing: 0.05em; }
 
 .item-dias { display: flex; gap: 4px; flex-wrap: wrap; }
 .dia-tag {

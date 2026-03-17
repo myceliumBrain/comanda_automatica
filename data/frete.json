@@ -1,0 +1,14 @@
+{
+  "bairros": [
+    {
+      "id": 1,
+      "bairro": "centro",
+      "preco": 5
+    },
+    {
+      "id": 2,
+      "bairro": "são cristovão",
+      "preco": 3
+    }
+  ]
+}
