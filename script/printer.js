@@ -9,8 +9,11 @@
    · Sem driver, sem diálogo, sem PDF
    ═══════════════════════════════════════════════════════════ */
 
-const net = require('net');
-const fs  = require('fs');
+const net            = require('net');
+const fs             = require('fs');
+const path           = require('path');
+const os             = require('os');
+const { execFile }   = require('child_process');
 
 // ── CONSTANTES ESC/POS ──
 
@@ -168,12 +171,61 @@ function enviarUSB(buffer, dispositivo) {
   });
 }
 
+// ── TRANSPORTE: WINDOWS (raw print via Win32 API) ──
+
+function enviarWindows(buffer, impressoraNome) {
+  return new Promise((resolve, reject) => {
+    const tmpFile = path.join(os.tmpdir(), 'elgin_print.bin');
+    fs.writeFile(tmpFile, buffer, (err) => {
+      if (err) return reject(err);
+
+      const ps = `
+$bytes = [System.IO.File]::ReadAllBytes('${tmpFile.replace(/\\/g, '\\\\')}')
+Add-Type -TypeDefinition @'
+using System;using System.Runtime.InteropServices;
+public class RawPrint{
+  [DllImport("winspool.Drv",EntryPoint="OpenPrinterA",SetLastError=true)]public static extern bool OpenPrinter(string n,out IntPtr h,IntPtr d);
+  [DllImport("winspool.Drv",EntryPoint="ClosePrinter")]public static extern bool ClosePrinter(IntPtr h);
+  [DllImport("winspool.Drv",EntryPoint="StartDocPrinterA",SetLastError=true)]public static extern int StartDocPrinter(IntPtr h,int l,int[] d);
+  [DllImport("winspool.Drv",EntryPoint="EndDocPrinter")]public static extern bool EndDocPrinter(IntPtr h);
+  [DllImport("winspool.Drv",EntryPoint="StartPagePrinter")]public static extern bool StartPagePrinter(IntPtr h);
+  [DllImport("winspool.Drv",EntryPoint="EndPagePrinter")]public static extern bool EndPagePrinter(IntPtr h);
+  [DllImport("winspool.Drv",EntryPoint="WritePrinter",SetLastError=true)]public static extern bool WritePrinter(IntPtr h,IntPtr buf,int cb,out int w);
+}
+'@
+$hPrinter=[IntPtr]::Zero
+[RawPrint]::OpenPrinter("${impressoraNome}",[ref]$hPrinter,[IntPtr]::Zero)|Out-Null
+if($hPrinter -eq [IntPtr]::Zero){throw "Impressora '${impressoraNome}' nao encontrada"}
+$di=New-Object int[] 3;$di[0]=1
+[RawPrint]::StartDocPrinter($hPrinter,1,$di)|Out-Null
+[RawPrint]::StartPagePrinter($hPrinter)|Out-Null
+$ptr=[System.Runtime.InteropServices.Marshal]::AllocHGlobal($bytes.Length)
+[System.Runtime.InteropServices.Marshal]::Copy($bytes,0,$ptr,$bytes.Length)
+$w=0;[RawPrint]::WritePrinter($hPrinter,$ptr,$bytes.Length,[ref]$w)|Out-Null
+[System.Runtime.InteropServices.Marshal]::FreeHGlobal($ptr)
+[RawPrint]::EndPagePrinter($hPrinter)|Out-Null
+[RawPrint]::EndDocPrinter($hPrinter)|Out-Null
+[RawPrint]::ClosePrinter($hPrinter)|Out-Null
+`;
+
+      execFile('powershell', ['-NoProfile', '-NonInteractive', '-Command', ps], (err2, stdout, stderr) => {
+        fs.unlink(tmpFile, () => {});
+        if (err2) return reject(new Error(stderr || err2.message));
+        resolve();
+      });
+    });
+  });
+}
+
 // ── PONTO DE ENTRADA ──
 
 async function imprimir(dados, config) {
   const buffer = gerarBuffer(dados);
 
-  if (config.impressoraTipo === 'usb') {
+  if (process.platform === 'win32') {
+    const nome = config.impressoraNomeWindows || 'ELGIN i8';
+    await enviarWindows(buffer, nome);
+  } else if (config.impressoraTipo === 'usb') {
     const dispositivo = config.impressoraDispositivo || '/dev/usb/lp0';
     await enviarUSB(buffer, dispositivo);
   } else {

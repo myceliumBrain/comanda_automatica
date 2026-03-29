@@ -807,3 +807,23 @@ async function init() {
 
 init();
 
+// ── CONFIGURAÇÕES ──
+
+async function abrirConfiguracoes() {
+  closeAllPanels();
+  const config = await window.api.lerConfig();
+  document.getElementById('cfg-impressora-windows').value = config.impressoraNomeWindows || '';
+  document.getElementById('config-overlay').style.display = 'flex';
+}
+
+function fecharConfiguracoes() {
+  document.getElementById('config-overlay').style.display = 'none';
+}
+
+async function salvarConfiguracoes() {
+  const nome = document.getElementById('cfg-impressora-windows').value.trim();
+  await window.api.salvarConfig('impressoraNomeWindows', nome);
+  fecharConfiguracoes();
+  showToast('Configurações salvas!');
+}
+

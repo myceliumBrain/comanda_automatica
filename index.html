@@ -33,7 +33,29 @@
     <a class="menu-nav-link" href="./cardapio-editor.html">🍽 Cardápio</a>
     <a class="menu-nav-link" href="./frete-editor.html">🚚 Frete</a>
     <a class="menu-nav-link" href="./historico.html">📋 Histórico</a>
+    <button class="menu-nav-link menu-nav-btn" onclick="abrirConfiguracoes()">⚙ Configurações</button>
   </nav>
+</div>
+
+<!-- ── MODAL DE CONFIGURAÇÕES ── -->
+<div id="config-overlay" class="revisao-overlay" style="display:none">
+  <div class="revisao-wrapper" style="max-width:420px">
+    <div class="revisao-topbar">
+      <span class="revisao-titulo">Configurações</span>
+    </div>
+    <div style="padding:20px 24px">
+      <label style="display:block;margin-bottom:6px;font-size:.85rem">Nome da impressora no Windows</label>
+      <input type="text" id="cfg-impressora-windows" placeholder="Ex: ELGIN i8"
+        style="width:100%;box-sizing:border-box;padding:8px 10px;font-size:.95rem;border:1px solid #ccc;border-radius:6px">
+      <p style="margin:8px 0 0;font-size:.78rem;color:#888">
+        Deve ser igual ao nome exibido em Painel de Controle → Dispositivos e Impressoras
+      </p>
+    </div>
+    <div class="revisao-actions">
+      <button class="btn-editar" onclick="fecharConfiguracoes()">Cancelar</button>
+      <button class="btn-confirmar" onclick="salvarConfiguracoes()">💾 Salvar</button>
+    </div>
+  </div>
 </div>
 
 <!-- ── SIDEBAR DO CARDÁPIO (direita) ── -->
