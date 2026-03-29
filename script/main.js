@@ -34,15 +34,36 @@ function garantirPastas() {
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   });
 
-  // Copia os defaults (cardapio, frete, config) apenas na primeira instalação
-  if (app.isPackaged) {
-    const defaults = path.join(process.resourcesPath, 'data');
+  if (!app.isPackaged) return;
+
+  // Migração v1.0.7→v1.0.8: copia dados da localização antiga (resources/data)
+  // para a nova (AppData/Roaming), preservando histórico existente
+  const legado = path.join(process.resourcesPath, 'data');
+  if (fs.existsSync(legado)) {
     for (const arquivo of ['cardapio.json', 'frete.json', 'config.json']) {
+      const origem  = path.join(legado, arquivo);
       const destino = path.join(DATA_DIR, arquivo);
-      const origem  = path.join(defaults, arquivo);
-      if (!fs.existsSync(destino) && fs.existsSync(origem)) {
+      if (fs.existsSync(origem) && !fs.existsSync(destino)) {
         fs.copyFileSync(origem, destino);
       }
+    }
+    // Migra arquivos de histórico
+    const legadoHist = path.join(legado, 'historico');
+    if (fs.existsSync(legadoHist)) {
+      fs.readdirSync(legadoHist).forEach(arquivo => {
+        const origem  = path.join(legadoHist, arquivo);
+        const destino = path.join(HIST_DIR, arquivo);
+        if (!fs.existsSync(destino)) fs.copyFileSync(origem, destino);
+      });
+    }
+  }
+
+  // Copia defaults do pacote para arquivos que ainda não existam
+  for (const arquivo of ['cardapio.json', 'frete.json', 'config.json']) {
+    const destino = path.join(DATA_DIR, arquivo);
+    const origem  = path.join(legado, arquivo);
+    if (!fs.existsSync(destino) && fs.existsSync(origem)) {
+      fs.copyFileSync(origem, destino);
     }
   }
 }
