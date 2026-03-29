@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comanda — Bar do Júlio</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./style/base.css">
+<link rel="stylesheet" href="./style/index.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+  body { opacity: 0; transition: opacity .3s ease; }
+  body.pronto { opacity: 1; }
+</style>
+</head>
+
+<body>
+
+<h1 class="brand">Bar do Júlio</h1>
+<p class="subtitle">Sistema de Comanda Digital</p>
+
+<!-- ── MENU (esquerda) ── -->
+<button class="menu-tab" onclick="toggleMenuPainel()">Menu</button>
+
+<div class="menu-panel" id="menu-panel">
+  <div class="menu-panel-header">
+    <span class="menu-panel-titulo">Menu</span>
+    <button class="menu-panel-fechar" onclick="toggleMenuPainel()">✕</button>
+  </div>
+  <nav class="menu-nav">
+    <a class="menu-nav-link" href="./agendamentos.html">📅 Agendamentos</a>
+    <a class="menu-nav-link" href="./cardapio-editor.html">🍽 Cardápio</a>
+    <a class="menu-nav-link" href="./frete-editor.html">🚚 Frete</a>
+    <a class="menu-nav-link" href="./historico.html">📋 Histórico</a>
+  </nav>
+</div>
+
+<!-- ── SIDEBAR DO CARDÁPIO (direita) ── -->
+<button class="cardapio-tab" onclick="toggleCardapioDia()">📋<br>Cardápio</button>
+
+<div class="dia-panel" id="dia-panel">
+  <div class="dia-panel-header">
+    <span class="dia-panel-titulo">Cardápio do Dia</span>
+    <button class="dia-panel-fechar" onclick="toggleCardapioDia()">✕</button>
+  </div>
+
+  <div class="dia-selector-row">
+    <span class="dia-label">Dia:</span>
+    <div class="dia-btns" id="dia-btns">
+      <button class="dia-btn" data-dia="segunda">SEG</button>
+      <button class="dia-btn" data-dia="terca">TER</button>
+      <button class="dia-btn" data-dia="quarta">QUA</button>
+      <button class="dia-btn" data-dia="quinta">QUI</button>
+      <button class="dia-btn" data-dia="sexta">SEX</button>
+      <button class="dia-btn" data-dia="sabado">SÁB</button>
+      <button class="dia-btn" data-dia="domingo">DOM</button>
+    </div>
+  </div>
+
+  <div class="cardapio-dia-inner" id="cardapio-dia-inner">
+    <!-- preenchido via JS -->
+  </div>
+</div>
+
+<!-- ── PAINEL DE FRETE (direita, abaixo do cardápio) ── -->
+<button class="frete-tab" onclick="toggleFretePainel()">🚚<br>Frete</button>
+
+<div class="frete-panel" id="frete-panel">
+  <div class="frete-panel-header">
+    <span class="frete-panel-titulo">Tabela de Frete</span>
+    <button class="frete-panel-fechar" onclick="toggleFretePainel()">✕</button>
+  </div>
+  <div class="frete-panel-inner" id="frete-panel-inner">
+    <!-- preenchido via JS -->
+  </div>
+</div>
+
+<!-- Backdrop compartilhado por todos os painéis -->
+<div class="dia-panel-backdrop" id="dia-panel-backdrop" onclick="closeAllPanels()"></div>
+
+<!-- ── PAINEL DE AGENDADOS DO DIA ── -->
+<div class="agendados-painel" id="agendados-painel">
+  <div class="agendados-header">
+    <div class="agendados-titulo-row">
+      <span class="agendados-titulo">📅 Agendados hoje</span>
+      <span class="agendados-count" id="agendados-count"></span>
+    </div>
+    <a href="./agendamentos.html" class="agendados-link-gerenciar">gerenciar agendamentos →</a>
+  </div>
+  <div class="agendados-lista" id="agendados-lista">
+    <!-- preenchido via JS -->
+  </div>
+</div>
+
+<div class="card">
+  <div class="comanda-header">
+    <div class="logo">Bar do Júlio</div>
+    <div class="tagline">Comanda de Pedido — Delivery</div>
+  </div>
+
+  <!-- Nº e nome -->
+  <div class="row">
+    <div class="field-group narrow">
+      <label>
+        Nº da Comanda
+        <span id="hint-ultima-comanda" class="hint-ultima"></span>
+      </label>
+      <input type="number" id="num-comanda" min="1" placeholder="001">
+    </div>
+    <div class="field-group">
+      <label>Nome do Cliente</label>
+      <input type="text" id="nome-cliente" placeholder="Ex: João Silva">
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Pratos -->
+  <div class="items-header">
+    <span class="items-title">🍽 Pratos</span>
+  </div>
+  <div id="pratos-list"></div>
+  <button class="add-btn" onclick="addItem('prato')">
+    <span class="plus">+</span> Adicionar prato
+  </button>
+
+  <hr class="divider">
+
+  <!-- Bebidas -->
+  <div class="items-header">
+    <span class="items-title">🥤 Bebidas</span>
+  </div>
+  <div id="bebidas-list"></div>
+  <button class="add-btn" onclick="addItem('bebida')">
+    <span class="plus">+</span> Adicionar bebida
+  </button>
+
+  <hr class="divider">
+
+  <!-- Entrega -->
+  <div class="items-header">
+    <span class="items-title">🚚 Entrega</span>
+  </div>
+
+  <div class="frete-entrega-group">
+    <div class="frete-modo-row">
+      <div class="frete-modo-toggle">
+        <button class="btn-frete-modo ativo" id="btn-modo-auto"   onclick="setFreteMode('auto')">🗺 Auto</button>
+        <button class="btn-frete-modo"        id="btn-modo-manual" onclick="setFreteMode('manual')">✏ Manual</button>
+      </div>
+      <button class="btn-remover-entrega" id="btn-remover-entrega" onclick="removerEntrega()" style="display:none">× Remover</button>
+    </div>
+    <div class="frete-entrega-row">
+      <div class="field-group">
+        <label>Endereço de Entrega</label>
+        <input type="text" id="frete-endereco" placeholder="Ex: Rua das Flores, 123, Centro...">
+      </div>
+      <button class="btn-calc-frete" id="btn-calc-frete" onclick="calcularFrete()">🗺 Calcular</button>
+    </div>
+    <div class="frete-resultado" id="frete-resultado" style="display:none">
+      <span class="frete-resultado-km"   id="frete-resultado-km"></span>
+      <span class="frete-resultado-sep">→</span>
+      <span class="frete-resultado-preco" id="frete-resultado-preco"></span>
+    </div>
+    <div id="frete-mapa" style="display:none"></div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Pagamento -->
+  <div class="items-header">
+    <span class="items-title">💰 Pagamento</span>
+  </div>
+
+  <div class="row" style="margin-bottom: 14px;">
+    <div class="field-group narrow">
+      <label>Frete (R$)</label>
+      <input type="text" id="frete-valor" placeholder="0,00" oninput="formatarValor(this); recalcularTotal()">
+    </div>
+    <div class="field-group">
+      <label>Valor Total (R$)</label>
+      <input type="text" id="valor-total" placeholder="Ex: 45,90" oninput="formatarValor(this)">
+    </div>
+  </div>
+
+  <div>
+    <label>Forma de Pagamento</label>
+    <div class="payment-options">
+      <button class="pay-btn" data-value="Dinheiro" onclick="selectPay(this)">💵 Dinheiro</button>
+      <button class="pay-btn" data-value="Pix" onclick="selectPay(this)">📲 Pix</button>
+      <button class="pay-btn" data-value="Débito" onclick="selectPay(this)">💳 Débito</button>
+      <button class="pay-btn" data-value="Crédito" onclick="selectPay(this)">💳 Crédito</button>
+      <button class="pay-btn" data-value="Outro" onclick="selectPay(this)">✏️ Outro</button>
+    </div>
+    <input type="hidden" id="forma-pagamento" value="">
+  </div>
+
+  <!-- Outro — aparece só quando Outro selecionado -->
+  <div id="outro-group">
+    <label>Descreva a forma de pagamento</label>
+    <input type="text" id="outro-desc" placeholder="Ex: Vale-refeição, cheque...">
+  </div>
+
+  <!-- Troco — aparece só quando Dinheiro selecionado -->
+  <div id="troco-group">
+    <label>Troco para (R$)</label>
+    <input type="text" id="troco-para" placeholder="Ex: 50,00" oninput="formatarValor(this)">
+  </div>
+
+  <div class="actions">
+    <button class="btn-print" onclick="abrirRevisao()">👁 Revisar e Concluir</button>
+    <button class="btn-clear" onclick="limpar()">Limpar</button>
+  </div>
+</div>
+
+
+<!-- ── TELA DE REVISÃO ── -->
+<div id="revisao-overlay" class="revisao-overlay" style="display:none">
+  <div class="revisao-wrapper">
+
+    <div class="revisao-topbar">
+      <span class="revisao-titulo">Revisão da Comanda</span>
+      <span class="revisao-aviso">Confira os dados antes de imprimir</span>
+    </div>
+
+    <!-- Preview da comanda (gerado via JS) -->
+    <div class="revisao-preview" id="revisao-preview"></div>
+
+    <div class="revisao-actions">
+      <button class="btn-editar" onclick="fecharRevisao()">✏️ Editar Comanda</button>
+      <button class="btn-confirmar" onclick="confirmarImpressao()">🖨 Imprimir Comanda</button>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+<script src="./script/utils.js" defer></script>
+<script src="./script/index.js" defer></script>
+
+</body>
+</html>

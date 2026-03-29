@@ -1,0 +1,297 @@
+/* frete.css — configuração de frete (origem + faixas de km)
+   Depende de: base.css */
+
+/* ── SEÇÕES ── */
+.frete-section {
+  margin-bottom: 36px;
+}
+.frete-section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: 0.12em;
+  color: var(--paper);
+  margin-bottom: 6px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--amber);
+}
+.frete-section-desc {
+  font-size: 0.7rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+/* ── FORMULÁRIO DE ORIGEM ── */
+.origem-form {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.frete-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+.frete-field.narrow {
+  flex: 0 0 130px;
+  min-width: 0;
+}
+.frete-field label {
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.btn-origem-buscar {
+  background: var(--amber);
+  color: var(--ink);
+  border: none;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.15em;
+  padding: 10px 18px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s;
+  align-self: flex-end;
+}
+.btn-origem-buscar:hover { background: #f0a500; }
+
+/* ── STATUS DA ORIGEM ── */
+.origem-status-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(39,174,96,.1);
+  border: 1px solid rgba(39,174,96,.3);
+  border-left: 3px solid var(--green);
+  padding: 8px 14px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.origem-status-txt {
+  font-size: 0.78rem;
+  color: var(--paper);
+  font-weight: 700;
+  flex: 1;
+}
+.origem-coords {
+  font-size: 0.62rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+/* ── MAPA ── */
+#map {
+  width: 100%;
+  height: 280px;
+  background: #d4cdc0;
+  border: 1px solid rgba(255,255,255,.1);
+  position: relative;
+  z-index: 1;
+}
+
+/* ── ÍCONE DE ORIGEM NO MAPA ── */
+.map-icon-origem {
+  font-size: 24px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.6));
+}
+
+/* ── FORMULÁRIO DE FAIXA ── */
+.faixa-form {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  background: rgba(253,248,240,.04);
+  border: 1.5px dashed rgba(255,255,255,.14);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+.btn-add-frete {
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.2em;
+  padding: 10px 22px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s;
+  align-self: flex-end;
+}
+.btn-add-frete:hover { background: var(--amber); color: var(--ink); }
+
+/* ── HEADER DA LISTA ── */
+.faixas-lista-header {
+  display: flex;
+  align-items: center;
+  padding: 5px 12px;
+  margin-bottom: 4px;
+}
+.faixas-col {
+  font-size: 0.55rem;
+  letter-spacing: 0.25em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.faixas-col-faixa { flex: 1; }
+.faixas-col-preco { flex: 0 0 100px; text-align: right; padding-right: 12px; }
+.faixas-col-acoes { flex: 0 0 100px; }
+
+/* ── LINHAS DA TABELA ── */
+.faixa-row {
+  background: var(--paper);
+  border-left: 3px solid var(--border);
+  display: flex;
+  align-items: stretch;
+  margin-bottom: 6px;
+  animation: slideIn .18s ease;
+  transition: border-color .15s;
+}
+.faixa-row:hover { border-left-color: var(--amber); }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.faixa-row-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 12px;
+}
+.faixa-label {
+  font-size: 0.82rem;
+  color: var(--ink);
+  font-weight: 700;
+  flex: 1;
+}
+.faixa-preco {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  color: var(--green);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.faixa-row-actions {
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--border);
+}
+.btn-item-edit,
+.btn-item-del {
+  flex: 1;
+  padding: 0 12px;
+  border: none;
+  cursor: pointer;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: background .12s, color .12s;
+  background: none;
+  color: var(--muted);
+  min-width: 52px;
+}
+.btn-item-edit:hover { background: var(--field-bg); color: var(--amber); }
+.btn-item-del:hover  { background: var(--red); color: #fff; }
+.btn-item-edit + .btn-item-del { border-top: 1px solid var(--border); }
+
+/* ── VAZIO ── */
+.frete-vazio {
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-style: italic;
+  padding: 18px 0;
+  letter-spacing: 0.08em;
+}
+
+/* ── INFO FOOTER ── */
+.info-footer {
+  font-size: 0.6rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-align: center;
+  margin-top: 28px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26,18,8,.85);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal {
+  background: var(--paper);
+  width: 100%;
+  max-width: 360px;
+  padding: 28px 28px 24px;
+  border-top: 3px solid var(--amber);
+}
+.modal-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 0.1em;
+  color: var(--ink);
+  margin-bottom: 18px;
+}
+.form-field { margin-bottom: 14px; }
+.form-field label {
+  display: block;
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.btn-modal-cancel {
+  flex: 1;
+  background: none;
+  border: 1.5px solid var(--border);
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 10px;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.btn-modal-cancel:hover { border-color: var(--red); color: var(--red); }
+.btn-modal-save {
+  flex: 2;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.2em;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  transition: background .15s;
+}
+.btn-modal-save:hover { background: var(--amber); color: var(--ink); }

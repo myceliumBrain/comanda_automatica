@@ -1,0 +1,24 @@
+{
+  "origem": {
+    "endereco": "Restaurante corujinha (Bar do Julio), 245, Rua General Argolo, Vasco da Gama, Rio de Janeiro, Região Geográfica Imediata do Rio de Janeiro, Região Metropolitana do Rio de Janeiro, Região Geográfica Intermediária do Rio de Janeiro, Rio de Janeiro, 20921-394, Brasil",
+    "lat": -22.8919776,
+    "lng": -43.227135
+  },
+  "faixas": [
+    {
+      "id": 1,
+      "ate_km": 1,
+      "preco": 3
+    },
+    {
+      "id": 2,
+      "ate_km": 3,
+      "preco": 5
+    },
+    {
+      "id": 3,
+      "ate_km": 5,
+      "preco": 7
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frete — Bar do Júlio</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="./style/base.css">
+<link rel="stylesheet" href="./style/frete.css">
+</head>
+<body>
+
+<div class="top-bar">
+  <a class="back-link" href="./index.html">← Voltar</a>
+  <div class="top-center">
+    <span class="top-logo">Bar do Júlio</span>
+    <span class="top-sub">Configuração de Frete</span>
+  </div>
+  <div class="top-right"></div>
+</div>
+
+<div class="page narrow">
+
+  <!-- ── SEÇÃO: ORIGEM ── -->
+  <section class="frete-section">
+    <div class="frete-section-title">📍 Endereço de Origem (Bar)</div>
+    <p class="frete-section-desc">
+      Defina o endereço do bar. O app usa este ponto para calcular a distância até cada entrega.
+    </p>
+
+    <div class="origem-form">
+      <div class="frete-field" style="flex:1">
+        <label>Endereço completo</label>
+        <input type="text" id="origem-input"
+               placeholder="Ex: Rua das Flores, 123, Centro, Cidade — ES">
+      </div>
+      <button class="btn-origem-buscar" onclick="buscarOrigem()">🔍 Geocodificar</button>
+    </div>
+
+    <div id="origem-status" class="origem-status-box" style="display:none">
+      <span class="origem-status-txt" id="origem-status-txt"></span>
+      <span class="origem-coords"    id="origem-coords"></span>
+    </div>
+
+    <div id="map"></div>
+  </section>
+
+  <!-- ── SEÇÃO: FAIXAS ── -->
+  <section class="frete-section">
+    <div class="frete-section-title">🚚 Tabela de Preços por Km</div>
+    <p class="frete-section-desc">
+      Cada faixa define: <em>"até X km, cobra-se R$ Y"</em>. A última faixa cobre qualquer distância além.
+    </p>
+
+    <!-- FORMULÁRIO DE ADIÇÃO -->
+    <div class="faixa-form">
+      <div class="frete-field narrow">
+        <label>Até (km)</label>
+        <input type="number" id="nova-ate-km" min="0.1" step="0.1" placeholder="Ex: 3">
+      </div>
+      <div class="frete-field narrow">
+        <label>Preço (R$)</label>
+        <input type="text" id="novo-preco" placeholder="0,00" oninput="formatarValor(this)">
+      </div>
+      <button class="btn-add-frete" onclick="adicionarFaixa()">Adicionar</button>
+    </div>
+
+    <!-- LISTA DE FAIXAS -->
+    <div class="faixas-lista-header">
+      <span class="faixas-col faixas-col-faixa">Faixa de km</span>
+      <span class="faixas-col faixas-col-preco">Preço</span>
+      <span class="faixas-col faixas-col-acoes"></span>
+    </div>
+
+    <div id="faixas-lista"></div>
+
+    <div id="faixas-vazio" class="frete-vazio" style="display:none">
+      Nenhuma faixa cadastrada. Adicione a primeira acima.
+    </div>
+  </section>
+
+  <p class="info-footer">ℹ Alterações salvas automaticamente · Distâncias calculadas via rota (OSRM/OpenStreetMap)</p>
+
+</div>
+
+<!-- MODAL DE EDIÇÃO -->
+<div id="modal-overlay" class="modal-overlay" style="display:none" onclick="fecharModal(event)">
+  <div class="modal">
+    <div class="modal-title">Editar faixa</div>
+    <input type="hidden" id="edit-id">
+    <div class="form-field">
+      <label>Até (km)</label>
+      <input type="number" id="edit-ate-km" min="0.1" step="0.1">
+    </div>
+    <div class="form-field">
+      <label>Preço (R$)</label>
+      <input type="text" id="edit-preco" placeholder="0,00" oninput="formatarValor(this)">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="fecharModal()">Cancelar</button>
+      <button class="btn-modal-save"   onclick="salvarEdicao()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="./script/utils.js"></script>
+<script src="./script/frete.js"></script>
+</body>
+</html>
