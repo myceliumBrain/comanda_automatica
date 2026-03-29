@@ -13,6 +13,9 @@ const path    = require('path');
 const fs      = require('fs');
 const printer = require('./printer');
 
+// Lida com eventos de instalação/atualização do Squirrel (Windows)
+if (require('electron-squirrel-startup')) app.quit();
+
 // ── PASTA DE DADOS ──
 // Em desenvolvimento : <projeto>/data/
 // Em produção (build): pasta do executável + /data/
