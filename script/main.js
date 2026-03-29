@@ -18,9 +18,9 @@ if (require('electron-squirrel-startup')) app.quit();
 
 // ── PASTA DE DADOS ──
 // Em desenvolvimento : <projeto>/data/
-// Em produção (build): pasta do executável + /data/
+// Em produção (build): AppData/Roaming/comanda-bar-julio/data/  (persiste entre atualizações)
 const DATA_DIR      = app.isPackaged
-  ? path.join(process.resourcesPath, 'data')
+  ? path.join(app.getPath('userData'), 'data')
   : path.join(__dirname, '..', 'data');
 
 const HIST_DIR      = path.join(DATA_DIR, 'historico');
@@ -28,11 +28,23 @@ const CARDAPIO_PATH = path.join(DATA_DIR, 'cardapio.json');
 const FRETE_PATH    = path.join(DATA_DIR, 'frete.json');
 const CONFIG_PATH   = path.join(DATA_DIR, 'config.json');
 
-// Garante que as pastas existem ao iniciar
+// Garante pastas e copia arquivos padrão do pacote caso ainda não existam
 function garantirPastas() {
   [DATA_DIR, HIST_DIR].forEach(dir => {
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   });
+
+  // Copia os defaults (cardapio, frete, config) apenas na primeira instalação
+  if (app.isPackaged) {
+    const defaults = path.join(process.resourcesPath, 'data');
+    for (const arquivo of ['cardapio.json', 'frete.json', 'config.json']) {
+      const destino = path.join(DATA_DIR, arquivo);
+      const origem  = path.join(defaults, arquivo);
+      if (!fs.existsSync(destino) && fs.existsSync(origem)) {
+        fs.copyFileSync(origem, destino);
+      }
+    }
+  }
 }
 
 // ── LEITURA / ESCRITA GENÉRICA ──
