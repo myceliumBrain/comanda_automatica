@@ -15,7 +15,7 @@ jobs:
       - name: Instalar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Instalar dependências do sistema
         run: sudo apt-get install -y fakeroot dpkg
@@ -41,7 +41,7 @@ jobs:
       - name: Instalar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Instalar dependências do projeto
         run: npm ci

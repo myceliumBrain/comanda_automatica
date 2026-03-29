@@ -10,7 +10,10 @@ module.exports = {
     {
       name: '@electron-forge/maker-squirrel',
       platforms: ['win32'],
-      config: {},
+      config: {
+        authors: 'Bar do Júlio',
+        description: 'Sistema de comanda digital — Bar do Júlio',
+      },
     },
     {
       name: '@electron-forge/maker-deb',
