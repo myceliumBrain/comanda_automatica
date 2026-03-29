@@ -123,6 +123,22 @@
 .pedido-obs  { font-size: 0.72rem; color: var(--muted); font-style: italic; margin-top: 2px; padding-left: 10px; border-left: 2px solid var(--border); }
 .pedido-troco { font-size: 0.75rem; color: var(--muted); margin-top: 8px; }
 
+/* ── REIMPRIMIR ── */
+.btn-reimprimir {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color .15s, color .15s, background .15s;
+  white-space: nowrap;
+}
+.btn-reimprimir:hover { border-color: var(--amber); color: var(--amber); background: rgba(230,126,34,.08); }
+
 /* ── CANCELAR PEDIDO ── */
 .btn-cancelar {
   background: none;

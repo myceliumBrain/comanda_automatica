@@ -145,6 +145,7 @@ h1.brand {
   background: var(--green);
   color: #fff;
 }
+.tab-icon { display: inline-block; rotate: 180deg; }
 .cardapio-tab:hover { background: #f0a500; }
 .frete-tab:hover    { background: #2ecc71; }
 .cardapio-tab.escondido,

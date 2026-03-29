@@ -14,6 +14,7 @@ module.exports = {
       config: {
         authors: 'Bar do Júlio',
         description: 'Sistema de comanda digital — Bar do Júlio',
+        setupIcon: './assets/corujinha-win.ico',
       },
     },
     {
